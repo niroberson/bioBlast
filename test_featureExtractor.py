@@ -41,5 +41,7 @@ class TestFeatureExtractor(TestCase):
         self.feature_extractor.extract_corpus(data)
         self.feature_extractor.vectorize_corpus()
         self.feature_extractor.compute_cosine()
-        top_matches = self.feature_extractor.get_n_top_matches(7)
-        self.assertEqual(self.feature_extractor.results[0][0], self.feature_extractor.results[0][1])
+        results = self.feature_extractor.get_n_top_matches(8)
+        self.assertEqual(results[0][0], results[0][1])
+        for result in results:
+            print result, "\n"

@@ -13,7 +13,6 @@ class FeatureExtractor(object):
         self.extracted_corpus = []
         self.tfs = None
         self.cosine_matrix = []
-        self.results = []
 
     @staticmethod
     def stem_tokens(tokens):
@@ -45,7 +44,9 @@ class FeatureExtractor(object):
 
     def get_n_top_matches(self, n):
         top_matches = heapq.nlargest(n, range(len(self.cosine_matrix)), key=self.cosine_matrix.__getitem__)
+        results = []
         for j in top_matches:
             row = j / len(self.corpus)
             column = j % len(self.corpus)
-            self.results.append([self.corpus[row], self.corpus[column], self.cosine_matrix[j]])
+            results.append([self.corpus[row], self.corpus[column], self.cosine_matrix[j]])
+        return results
