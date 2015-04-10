@@ -1,15 +1,14 @@
 __author__ = 'nathan'
+# Code to access MEDLINE tables
 
-from Bio import Entrez
-Entrez.email = "nathir2@vbi.vt.edu"
+import MySQLdb as mdb
 
-handle = Entrez.einfo(db="pubmed")
-record = Entrez.read(handle)
-handle.close()
-print record["DbInfo"]["Count"]
+con = mdb.connect('localhost', 'johnny', 'johnny', 'etblast');
 
+with con:
+    cur = con.cursor()
+    cur.execute("SELECT * FROM MEDLINE_2014_abstracts")
 
-handle = Entrez.esearch(db="pubmed", term="all")
-record = Entrez.read(handle)
-handle.close()
-print record["Count"]
+    for i in range(10):
+        row = cur.fetchone()
+        print row[0], row[1]

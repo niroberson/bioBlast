@@ -10,7 +10,6 @@ import heapq
 class FeatureExtractor(object):
     def __init__(self):
         self.corpus = None
-        self.extracted_corpus = []
         self.tfs = None
         self.cosine_matrix = []
         self.results = []
@@ -30,22 +29,24 @@ class FeatureExtractor(object):
 
     def extract_corpus(self, corpus):
         self.corpus = corpus
+        extracted = []
         for entry in corpus:
             lowers = entry.lower()
             no_punctuation = lowers.translate(None, string.punctuation)
-            self.extracted_corpus.append(no_punctuation)
+            extracted.append(no_punctuation)
+        return extracted
 
-    def vectorize_corpus(self):
+    def vectorize_corpus(self, extracted):
         tfidf = TfidfVectorizer(tokenizer=self.tokenize, stop_words='english')
-        self.tfs = tfidf.fit_transform(self.extracted_corpus)
+        self.tfs = tfidf.fit_transform(extracted)
 
-    def compute_cosine(self):
-        for row in self.tfs:
-            self.cosine_matrix = hstack((self.cosine_matrix, linear_kernel(row, self.tfs).flatten()))
+    def compute_cosine(self, tfs):
+        for i, row in enumerate(tfs):
+            self.cosine_matrix = hstack((self.cosine_matrix, linear_kernel(row, tfs).flatten()))
 
-    def find_matches(self):
-        sorted_matches = heapq.nlargest(len(self.cosine_matrix), range(len(self.cosine_matrix)), key=self.cosine_matrix.__getitem__)
+    def find_matches(self, cosine_matrix, corpus):
+        sorted_matches = heapq.nlargest(len(cosine_matrix), range(len(cosine_matrix)), key=cosine_matrix.__getitem__)
         for j in sorted_matches:
-            row = j / len(self.corpus)
-            column = j % len(self.corpus)
-            self.results.append([self.corpus[row], self.corpus[column], self.cosine_matrix[j]])
+            row = j / len(corpus)
+            column = j % len(corpus)
+            self.results.append([corpus[row], corpus[column], cosine_matrix[j]])

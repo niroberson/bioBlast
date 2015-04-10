@@ -15,12 +15,6 @@ class TestFeatureExtractor(TestCase):
     def setUp(self):
         self.feature_extractor = FeatureExtractor()
 
-    def test_stem_tokens(self):
-        a = ["realized", "realizes", "realization"]
-        stemmed = self.feature_extractor.stem_tokens(a)
-        for stem in stemmed:
-            self.assertEqual("realiz", stem)
-
     def test_tokenize(self):
         a = "realized realizes realization"
         stemmed = self.feature_extractor.tokenize(a)
@@ -28,20 +22,20 @@ class TestFeatureExtractor(TestCase):
             self.assertEqual("realiz", stem)
 
     def test_extract_corpus(self):
-        self.feature_extractor.extract_corpus(data)
-        self.assertEqual(6, len(self.feature_extractor.extracted_corpus))
+        extracted = self.feature_extractor.extract_corpus(data)
+        self.assertEqual(6, len(extracted))
 
     def test_compute_cosine(self):
-        self.feature_extractor.extract_corpus(data)
-        self.feature_extractor.vectorize_corpus()
-        self.feature_extractor.compute_cosine()
+        extracted = self.feature_extractor.extract_corpus(data)
+        self.feature_extractor.vectorize_corpus(extracted)
+        self.feature_extractor.compute_cosine(self.feature_extractor.tfs)
         self.assertEqual(36, len(self.feature_extractor.cosine_matrix))
 
     def test_get_n_top_matches(self):
-        self.feature_extractor.extract_corpus(data)
-        self.feature_extractor.vectorize_corpus()
-        self.feature_extractor.compute_cosine()
-        self.feature_extractor.find_matches()
+        extracted = self.feature_extractor.extract_corpus(data)
+        self.feature_extractor.vectorize_corpus(extracted)
+        self.feature_extractor.compute_cosine(self.feature_extractor.tfs)
+        self.feature_extractor.find_matches(self.feature_extractor.cosine_matrix, self.feature_extractor.corpus)
         self.assertEqual(self.feature_extractor.results[0][0], self.feature_extractor.results[0][1])
         self.assertEqual(len(data) ** 2, len(self.feature_extractor.results))
         # for result in self.feature_extractor.results:
