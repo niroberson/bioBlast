@@ -1,12 +1,19 @@
 __author__ = 'nathan'
 # Code to access MEDLINE tables
 
-import MySQLdb as mdb
+import MySQLdb as db
 from FeatureExtractor import FeatureExtractor
 
 
 # Setup connection to etblast databse
-con = mdb.connect('localhost', 'johnny', 'johnny', 'etblast')
+HOST = 'localhost'
+PORT = 3306
+USER = "johnny"
+PASSWORD = "johnny"
+DB = "etblast"
+
+con = db.connect(host=HOST, user=USER, passwd=PASSWORD, db=DB)
+
 
 # Create feature extractor object
 fe = FeatureExtractor()
