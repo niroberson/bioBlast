@@ -28,5 +28,5 @@ with con:
         row = cur.fetchone()
         print row
 
-        stemmed = fe.stem_tokens(row[1])
-        print stemmed
+        # stemmed = fe.stem_tokens(row)
+        # print stemmed
