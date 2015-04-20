@@ -7,7 +7,6 @@ from FeatureExtractor import FeatureExtractor
 
 # Setup connection to etblast databse
 HOST = 'localhost'
-PORT = 3306
 USER = "johnny"
 PASSWORD = "johnny"
 DB = "etblast"
@@ -22,7 +21,7 @@ fe = FeatureExtractor()
 with con:
 
     cur = con.cursor()
-    cur.execute("SELECT AbstractText FROM MEDLINE_2014_0 LIMIT 1;")
+    cur.execute("SELECT AbstractText FROM MEDLINE_0 LIMIT 1;")
 
     for i in range(cur.rowcount):
 
