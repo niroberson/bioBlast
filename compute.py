@@ -21,7 +21,7 @@ fe = FeatureExtractor()
 with con:
 
     cur = con.cursor()
-    cur.execute("SELECT AbstractText FROM MEDLINE_0 LIMIT 1;")
+    cur.execute("SELECT AbstractText FROM MEDLINE_0 LIMIT 15;")
 
     for i in range(cur.rowcount):
 
