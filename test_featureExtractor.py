@@ -41,3 +41,10 @@ class TestFeatureExtractor(TestCase):
         # for result in self.feature_extractor.results:
         # print self.feature_extractor.cosine_matrix
         #     print result, "\n"
+
+    def test_single_entry(self):
+        extracted = self.feature_extractor.extract_entry(data[0])
+        self.feature_extractor.initialize_vectorize()
+        self.feature_extractor.fit_transform_entry(extracted)
+        cosine_mat = self.feature_extractor.compute_cosine(self.feature_extractor.tfs)
+        print cosine_mat

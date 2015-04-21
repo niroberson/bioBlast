@@ -21,12 +21,15 @@ fe = FeatureExtractor()
 with con:
 
     cur = con.cursor()
-    cur.execute("SELECT AbstractText FROM MEDLINE_0_old LIMIT 15;")
+    cur.execute("SELECT AbstractText FROM MEDLINE_0_old limit 200;")
 
     for i in range(cur.rowcount):
 
         row = cur.fetchone()
-        print row
+        if row:
+            extracted = fe.extract_entry(row)
+            fe.initialize_vectorize()
+            fe.fit_transform_entry(extracted)
 
-        # stemmed = fe.stem_tokens(row)
-        # print stemmed
+    cosine_mat = fe.compute_cosine(fe.tfs)
+    print cosine_mat

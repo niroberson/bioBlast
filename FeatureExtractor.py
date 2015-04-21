@@ -36,13 +36,29 @@ class FeatureExtractor(object):
             extracted.append(no_punctuation)
         return extracted
 
+    def extract_entry(self, entry):
+        extracted = []
+        lowers = entry.lower()
+        no_punctuation = lowers.translate(None, string.punctuation)
+        extracted.append(no_punctuation)
+        return extracted
+
     def vectorize_corpus(self, extracted):
         tfidf = TfidfVectorizer(tokenizer=self.tokenize, stop_words='english')
         self.tfs = tfidf.fit_transform(extracted)
+        return self.tfs
+
+    def initialize_vectorize(self):
+        self.tfidf = TfidfVectorizer(tokenizer=self.tokenize, stop_words='english')
+
+    def fit_transform_entry(self, extracted):
+        self.tfs = self.tfidf.fit_transform(extracted)
+
 
     def compute_cosine(self, tfs):
         for i, row in enumerate(tfs):
             self.cosine_matrix = hstack((self.cosine_matrix, linear_kernel(row, tfs).flatten()))
+        return self.cosine_matrix
 
     def find_matches(self, cosine_matrix, corpus):
         sorted_matches = heapq.nlargest(len(cosine_matrix), range(len(cosine_matrix)), key=cosine_matrix.__getitem__)
