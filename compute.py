@@ -28,7 +28,7 @@ with con:
 
         row = cur.fetchone()
         if row:
-            compiled_corpus += row[0]
+            compiled_corpus = [compiled_corpus, row[0]]
 
 extracted = fe.extract_corpus(compiled_corpus)
 tfs = fe.vectorize_corpus(extracted)
