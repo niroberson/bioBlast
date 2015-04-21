@@ -13,7 +13,6 @@ DB = "etblast"
 
 con = db.connect(host=HOST, user=USER, passwd=PASSWORD, db=DB)
 
-
 # Create feature extractor object
 fe = FeatureExtractor()
 
