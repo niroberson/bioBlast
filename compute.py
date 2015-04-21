@@ -28,9 +28,7 @@ with con:
 
         row = cur.fetchone()
         if row:
-            compiled_corpus = [compiled_corpus, row[0]]
+            compiled_corpus.append(row[0])
 
-extracted = fe.extract_corpus(compiled_corpus)
-tfs = fe.vectorize_corpus(extracted)
-cosine_mat = fe.compute_cosine(tfs)
-print cosine_mat
+results = fe.find_matches(compiled_corpus)
+print results

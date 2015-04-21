@@ -35,33 +35,6 @@ class TestFeatureExtractor(TestCase):
         self.assertEqual(36, len(self.feature_extractor.cosine_matrix))
 
     def test_get_n_top_matches(self):
-        extracted = self.feature_extractor.extract_corpus(data)
-        self.feature_extractor.vectorize_corpus(extracted)
-        self.feature_extractor.compute_cosine(self.feature_extractor.tfs)
-        self.feature_extractor.find_matches(self.feature_extractor.cosine_matrix, self.feature_extractor.corpus)
+        self.feature_extractor.find_matches(data)
         self.assertEqual(self.feature_extractor.results[0][0], self.feature_extractor.results[0][1])
         self.assertEqual(len(data) ** 2, len(self.feature_extractor.results))
-        # for result in self.feature_extractor.results:
-        # print self.feature_extractor.cosine_matrix
-        #     print result, "\n"
-
-    def test_single_entry(self):
-        extracted = self.feature_extractor.extract_entry(data2[0])
-        self.feature_extractor.initialize_vectorize()
-        self.feature_extractor.fit_transform_entry(extracted)
-        cosine_mat = self.feature_extractor.compute_cosine(self.feature_extractor.tfs)
-        self.assertAlmostEqual(1, cosine_mat[0])
-
-    def test_multiple_single_entry(self):
-        extracted = self.feature_extractor.extract_entry(data2[0])
-        print extracted
-        self.feature_extractor.initialize_vectorize()
-        self.feature_extractor.fit_transform_entry(extracted)
-
-        extracted = self.feature_extractor.extract_entry(data3[0])
-        print extracted
-        self.feature_extractor.initialize_vectorize()
-        self.feature_extractor.fit_transform_entry(extracted)
-
-        cosine_mat = self.feature_extractor.compute_cosine(self.feature_extractor.tfs)
-        self.assertEqual(2, cosine_mat.size)

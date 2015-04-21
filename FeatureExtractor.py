@@ -28,41 +28,35 @@ class FeatureExtractor(object):
         return stems
 
     def extract_corpus(self, corpus):
-        self.corpus = corpus
-        extracted = []
+        extracted_corpus = []
         for entry in corpus:
-            lowers = entry.lower()
-            no_punctuation = lowers.translate(None, string.punctuation)
-            extracted.append(no_punctuation)
-        return extracted
+            extracted_corpus.append(self.extract_entry(entry))
+        return extracted_corpus
 
-    def extract_entry(self, entry):
-        extracted = []
+    @staticmethod
+    def extract_entry(entry):
         lowers = entry.lower()
         no_punctuation = lowers.translate(None, string.punctuation)
-        extracted.append(no_punctuation)
+        extracted = no_punctuation
         return extracted
 
-    def vectorize_corpus(self, extracted):
+    def vectorize_corpus(self, extracted_corpus):
         tfidf = TfidfVectorizer(tokenizer=self.tokenize, stop_words='english')
-        self.tfs = tfidf.fit_transform(extracted)
-        return self.tfs
-
-    def initialize_vectorize(self):
-        self.tfidf = TfidfVectorizer(tokenizer=self.tokenize, stop_words='english')
-
-    def fit_transform_entry(self, extracted):
-        self.tfs = self.tfidf.fit_transform(extracted)
-        print self.tfs
+        tfs = tfidf.fit_transform(extracted_corpus)
+        return tfs
 
     def compute_cosine(self, tfs):
         for i, row in enumerate(tfs):
             self.cosine_matrix = hstack((self.cosine_matrix, linear_kernel(row, tfs).flatten()))
         return self.cosine_matrix
 
-    def find_matches(self, cosine_matrix, corpus):
+    def find_matches(self, corpus):
+        extracted_corpus = self.extract_corpus(corpus)
+        tfs = self.vectorize_corpus(extracted_corpus)
+        cosine_matrix = self.compute_cosine(tfs)
         sorted_matches = heapq.nlargest(len(cosine_matrix), range(len(cosine_matrix)), key=cosine_matrix.__getitem__)
         for j in sorted_matches:
             row = j / len(corpus)
             column = j % len(corpus)
             self.results.append([corpus[row], corpus[column], cosine_matrix[j]])
+        return self.results
