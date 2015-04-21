@@ -30,8 +30,8 @@ class TestFeatureExtractor(TestCase):
 
     def test_compute_cosine(self):
         extracted = self.feature_extractor.extract_corpus(data)
-        self.feature_extractor.vectorize_corpus(extracted)
-        self.feature_extractor.compute_cosine(self.feature_extractor.tfs)
+        tfs = self.feature_extractor.vectorize_corpus(extracted)
+        self.feature_extractor.compute_cosine(tfs)
         self.assertEqual(36, len(self.feature_extractor.cosine_matrix))
 
     def test_get_n_top_matches(self):

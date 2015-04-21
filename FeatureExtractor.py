@@ -35,6 +35,7 @@ class FeatureExtractor(object):
 
     @staticmethod
     def extract_entry(entry):
+        print entry
         lowers = entry.lower()
         no_punctuation = lowers.translate(None, string.punctuation)
         extracted = no_punctuation
