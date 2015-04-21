@@ -30,4 +30,4 @@ with con:
             compiled_corpus.append(row[0])
 
 results = fe.find_matches(compiled_corpus)
-print results
+print fe.cosine_matrix.size
