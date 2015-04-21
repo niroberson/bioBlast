@@ -26,6 +26,7 @@ with con:
     for i in range(cur.rowcount):
 
         row = cur.fetchone()
+        row = row[0]
         if row:
             extracted = fe.extract_entry(row)
             fe.initialize_vectorize()

@@ -11,6 +11,9 @@ data = ["All of my brother's sons are in college",
         "My brother's son's college is nearby"]
 
 
+data2 = ("All of my brother's daughters are in preschool",)
+
+
 class TestFeatureExtractor(TestCase):
     def setUp(self):
         self.feature_extractor = FeatureExtractor()
@@ -43,8 +46,8 @@ class TestFeatureExtractor(TestCase):
         #     print result, "\n"
 
     def test_single_entry(self):
-        extracted = self.feature_extractor.extract_entry(data[0])
+        extracted = self.feature_extractor.extract_entry(data2[0])
         self.feature_extractor.initialize_vectorize()
         self.feature_extractor.fit_transform_entry(extracted)
         cosine_mat = self.feature_extractor.compute_cosine(self.feature_extractor.tfs)
-        print cosine_mat
+        self.assertAlmostEqual(1, cosine_mat[0])
