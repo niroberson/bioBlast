@@ -17,6 +17,7 @@ con = db.connect(host=HOST, user=USER, passwd=PASSWORD, db=DB)
 # Create feature extractor object
 fe = FeatureExtractor()
 
+compiled_corpus = []
 
 with con:
 
@@ -26,11 +27,10 @@ with con:
     for i in range(cur.rowcount):
 
         row = cur.fetchone()
-        row = row[0]
         if row:
-            extracted = fe.extract_entry(row)
-            fe.initialize_vectorize()
-            fe.fit_transform_entry(extracted)
+            compiled_corpus += row[0]
 
-    cosine_mat = fe.compute_cosine(fe.tfs)
-    print cosine_mat
+extracted = fe.extract_corpus(compiled_corpus)
+tfs = fe.vectorize_corpus(extracted)
+cosine_mat = fe.compute_cosine(tfs)
+print cosine_mat

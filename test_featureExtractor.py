@@ -12,7 +12,7 @@ data = ["All of my brother's sons are in college",
 
 
 data2 = ("All of my brother's daughters are in preschool",)
-
+data3 = ("When will it be time for lunch?",)
 
 class TestFeatureExtractor(TestCase):
     def setUp(self):
@@ -51,3 +51,17 @@ class TestFeatureExtractor(TestCase):
         self.feature_extractor.fit_transform_entry(extracted)
         cosine_mat = self.feature_extractor.compute_cosine(self.feature_extractor.tfs)
         self.assertAlmostEqual(1, cosine_mat[0])
+
+    def test_multiple_single_entry(self):
+        extracted = self.feature_extractor.extract_entry(data2[0])
+        print extracted
+        self.feature_extractor.initialize_vectorize()
+        self.feature_extractor.fit_transform_entry(extracted)
+
+        extracted = self.feature_extractor.extract_entry(data3[0])
+        print extracted
+        self.feature_extractor.initialize_vectorize()
+        self.feature_extractor.fit_transform_entry(extracted)
+
+        cosine_mat = self.feature_extractor.compute_cosine(self.feature_extractor.tfs)
+        self.assertEqual(2, cosine_mat.size)

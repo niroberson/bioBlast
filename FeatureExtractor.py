@@ -53,7 +53,7 @@ class FeatureExtractor(object):
 
     def fit_transform_entry(self, extracted):
         self.tfs = self.tfidf.fit_transform(extracted)
-
+        print self.tfs
 
     def compute_cosine(self, tfs):
         for i, row in enumerate(tfs):
