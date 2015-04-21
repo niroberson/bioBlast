@@ -30,12 +30,12 @@ class FeatureExtractor(object):
     def extract_corpus(self, corpus):
         extracted_corpus = []
         for entry in corpus:
-            extracted_corpus.append(self.extract_entry(entry))
+            if entry:
+                extracted_corpus.append(self.extract_entry(entry))
         return extracted_corpus
 
     @staticmethod
     def extract_entry(entry):
-        print entry
         lowers = entry.lower()
         no_punctuation = lowers.translate(None, string.punctuation)
         extracted = no_punctuation
