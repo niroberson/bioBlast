@@ -68,4 +68,4 @@ class Medline(object):
     def compute(self):
         self.MapOfAbstracts = pickle.load(open("MapOfAbstracts.p", "rb"))
         fe = FeatureExtractor()
-        fe.find_matches(self.MapOfAbstracts.values())
+        fe.find_matches(self.MapOfAbstracts.values()[0:2000])

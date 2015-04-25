@@ -1,3 +1,5 @@
 .idea/*
 weeklyUpdates/*
 *.pyc
+data/*
+MapOfAbstracts.p
