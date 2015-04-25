@@ -43,7 +43,7 @@ class Medline(object):
             abstracts=[]
             for i in range(cur.rowcount):
                 row = cur.fetchone()
-                if row[0] & row[1]:
+                if row[1]:
                     pmids.append(row[0])
                     abstracts.append(row[1])
             f = open('abstracts.txt', 'w')
