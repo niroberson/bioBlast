@@ -29,4 +29,7 @@ class Medline(object):
 
             self.pmids = pmids
             f = open('results.txt', 'w')
-            f.write(self.pmids)
+            for pmid in pmids:
+                f.write(pmid)
+
+            f.close()
