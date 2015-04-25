@@ -62,10 +62,10 @@ class Medline(object):
                 row = cur.fetchone()
                 if row[1]:
                     self.MapOfAbstracts[row[0]] = row[1]
-            pickle.dump(self.MapOfAbstracts, open("/data/MapOfAbstracts.p", "wb"))
+            pickle.dump(self.MapOfAbstracts, open("MapOfAbstracts.p", "wb"))
 
 
     def compute(self):
-        self.MapOfAbstracts = pickle.load(open("/data/MapOfAbstracts.p", "rb"))
+        self.MapOfAbstracts = pickle.load(open("MapOfAbstracts.p", "rb"))
         fe = FeatureExtractor()
         fe.find_matches(self.MapOfAbstracts.values())
