@@ -11,6 +11,7 @@ class FeatureExtractor(object):
     def __init__(self):
         self.corpus = None
         self.tfs = None
+        self.tfidf = None
         self.cosine_matrix = []
         self.results = []
 
@@ -42,8 +43,14 @@ class FeatureExtractor(object):
         return extracted
 
     def vectorize_corpus(self, extracted_corpus):
-        tfidf = TfidfVectorizer(tokenizer=self.tokenize, stop_words='english')
-        tfs = tfidf.fit_transform(extracted_corpus)
+        if self.tfidf is None:
+            tfidf = TfidfVectorizer(tokenizer=self.tokenize, stop_words='english')
+            tfs = tfidf.fit_transform(extracted_corpus)
+            self.tfidf = tfidf
+            print 'Vectorizer has been trained with', len(tfidf.vocabulary_.keys()), 'words'
+        else:
+            tfidf = self.tfidf
+            tfs = tfidf.transform(extracted_corpus)
         return tfs
 
     def compute_cosine(self, tfs):

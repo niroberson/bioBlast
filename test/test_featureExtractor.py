@@ -38,3 +38,24 @@ class TestFeatureExtractor(TestCase):
         self.feature_extractor.find_matches(data)
         self.assertEqual(self.feature_extractor.results[0][0], self.feature_extractor.results[0][1])
         self.assertEqual(len(data) ** 2, len(self.feature_extractor.results))
+
+    def test_fit_transform(self):
+        text = self.feature_extractor.extract_entry(data[0])
+        tfs = self.feature_extractor.vectorize_corpus([text])
+        print self.feature_extractor.tfidf.vocabulary_
+        print tfs.todense()
+        print
+
+        tfs = self.feature_extractor.vectorize_corpus([data[2]])
+        print self.feature_extractor.tfidf.vocabulary_
+        print tfs.todense()
+
+        text = self.feature_extractor.extract_entry(data[0])
+        tfs = self.feature_extractor.vectorize_corpus([text])
+        print self.feature_extractor.tfidf.vocabulary_
+        print tfs.todense()
+
+        text = self.feature_extractor.extract_entry(data[4])
+        tfs = self.feature_extractor.vectorize_corpus([text])
+        print self.feature_extractor.tfidf.vocabulary_
+        print tfs.todense()
