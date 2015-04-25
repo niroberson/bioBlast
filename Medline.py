@@ -20,7 +20,7 @@ class Medline(object):
         with self.con:
             con = self.con
             cur = con.cursor()
-            cur.execute("SELECT PMID FROM MEDLINE_0 limit 200;")
+            cur.execute("SELECT PMID FROM MEDLINE_0;")
             pmids = []
             for i in range(cur.rowcount):
                 row = cur.fetchone()
@@ -28,7 +28,7 @@ class Medline(object):
                     pmids.append(row)
 
             self.pmids = pmids
-            f = open('results.txt', 'w')
+            f = open('pmids.txt', 'w')
             for pmid in pmids:
                 f.write("%s\n" % pmid)
 
