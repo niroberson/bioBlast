@@ -38,15 +38,22 @@ class Medline(object):
         with self.con:
             con = self.con
             cur = con.cursor()
-            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT 200;")
+            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0;")
+            pmids=[]
             abstracts=[]
             for i in range(cur.rowcount):
                 row = cur.fetchone()
-                if row:
-                    abstracts.append(row)
+                if row[1]:
+                    pmids.append(row[0])
+                    abstracts.append(row[1])
             f = open('abstracts.txt', 'w')
             for index, abstract in abstracts:
                 f.write("%s\n" % abstract)
+
+            f = open('pmids2.txt', 'w')
+            for pmid in pmids:
+                f.write("%s\n" % pmid)
+
 
 
 
