@@ -45,8 +45,8 @@ class Medline(object):
             for i in range(cur.rowcount):
                 row = cur.fetchone()
                 if row[1]:
-                    f1.write("%s\n" % pmid)
-                    f2.write("%s\n" % abstract)
+                    f1.write("%s\n" % row[0])
+                    f2.write("%s\n" % row[1])
 
 
 
