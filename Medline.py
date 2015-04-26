@@ -66,9 +66,9 @@ class Medline(object):
     def compute(self):
         self.MapOfAbstracts = pickle.load(open("MapOfAbstracts.p", "rb"))
         fe = FeatureExtractor()
-        extracted_corpus = self.extract_corpus(self.MapOfAbstracts.values())
-        tfs = self.vectorize_corpus(extracted_corpus)
-        cosine_matrix = self.compute_cosine(tfs)
+        extracted_corpus = fe.extract_corpus(self.MapOfAbstracts.values())
+        tfs = fe.vectorize_corpus(extracted_corpus)
+        cosine_matrix = fe.compute_cosine(tfs)
 
     def compute2(self):
         with self.con:
@@ -79,7 +79,7 @@ class Medline(object):
                 row = cur.fetchone()
                 if row[1]:
                     self.MapOfAbstracts[row[0]] = row[1]
-            extracted_corpus = self.extract_corpus(self.MapOfAbstracts.values())
-            tfs = self.vectorize_corpus(extracted_corpus)
-            cosine_matrix = self.compute_cosine(tfs)
-
+        fe = FeatureExtractor()
+        extracted_corpus = fe.extract_corpus(self.MapOfAbstracts.values())
+        tfs = fe.vectorize_corpus(extracted_corpus)
+        cosine_matrix = fe.compute_cosine(tfs)
