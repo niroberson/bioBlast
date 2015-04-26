@@ -49,7 +49,6 @@ class Medline(object):
                 if row[1]:
                     f1.write("%s\n" % row[0])
                     f2.write("%s\n" % row[1])
-
             f1.close()
             f2.close()
 
@@ -64,8 +63,23 @@ class Medline(object):
                     self.MapOfAbstracts[row[0]] = row[1]
             pickle.dump(self.MapOfAbstracts, open("MapOfAbstracts.p", "wb"))
 
-
     def compute(self):
         self.MapOfAbstracts = pickle.load(open("MapOfAbstracts.p", "rb"))
         fe = FeatureExtractor()
-        fe.find_matches(self.MapOfAbstracts.values()[0:2000])
+        extracted_corpus = self.extract_corpus(self.MapOfAbstracts.values())
+        tfs = self.vectorize_corpus(extracted_corpus)
+        cosine_matrix = self.compute_cosine(tfs)
+
+    def compute2(self):
+        with self.con:
+            con = self.con
+            cur = con.cursor()
+            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0;")
+            for i in range(cur.rowcount):
+                row = cur.fetchone()
+                if row[1]:
+                    self.MapOfAbstracts[row[0]] = row[1]
+            extracted_corpus = self.extract_corpus(self.MapOfAbstracts.values())
+            tfs = self.vectorize_corpus(extracted_corpus)
+            cosine_matrix = self.compute_cosine(tfs)
+
