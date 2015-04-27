@@ -107,3 +107,17 @@ class Medline(object):
     @staticmethod
     def update_progress(progress):
         print '\r{0}%'.format(progress)
+
+    def load_progress(self):
+	with open("documeted_pmids.p", "wr"):
+		self.processed_pmids = readlines	
+
+    def  process(self):
+	load_progress()
+	with self.con
+		cur = con.cursor()
+		cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0;")
+		rows = cur.fetchall()
+		for row in rows:
+			if (row[0]) not in self.processed_pmids:
+				# tokenize/stem, save
