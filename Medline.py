@@ -2,6 +2,7 @@ __author__ = 'nathan'
 import MySQLdb as db
 import pickle
 from FeatureExtractor import FeatureExtractor
+import sys
 
 class Medline(object):
     def __init__(self):
@@ -86,9 +87,12 @@ class Medline(object):
         with self.con:
             con = self.con
             cur = con.cursor()
-            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT 500000;")
+            n_articles = 500000
+            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT" + n_articles + ";")
             rows = cur.fetchall()
-	    for row in rows:
+            for i, row in enumerate(rows):
+                if i % 100000 == 0:
+                    self.update_progress(i)
                 if row[1]:
                     self.MapOfAbstracts[row[0]] = row[1]
         extracted_corpus = self.fe.extract_corpus(self.MapOfAbstracts.values())
@@ -99,3 +103,7 @@ class Medline(object):
         # # for i, row in enumerate(tfs):
         # #     tfs_dict[pmids[i]] = row
         # # cosine_matrix = fe.compute_cosine(tfs)
+
+    @staticmethod
+    def update_progress(progress):
+        print '\r{0}%'.format(progress)

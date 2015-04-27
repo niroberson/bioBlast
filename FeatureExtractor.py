@@ -2,7 +2,6 @@ __author__ = 'nathan'
 import nltk
 import string
 from sklearn.feature_extraction.text import TfidfVectorizer
-from nltk.stem.snowball import SnowballStemmer
 from nltk.stem.porter import PorterStemmer
 from sklearn.metrics.pairwise import linear_kernel
 from numpy import hstack
@@ -18,7 +17,7 @@ class FeatureExtractor(object):
 
     @staticmethod
     def stem_tokens(tokens):
-        stemmer = SnowballStemmer('english')
+        stemmer = PorterStemmer()
         stemmed = []
         for item in tokens:
             stemmed.append(stemmer.stem(item))
