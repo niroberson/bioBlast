@@ -8,6 +8,7 @@ class Medline(object):
         self.MapOfAbstracts = dict()
         self.con = None
         self.pmids = None
+        self.fe = FeatureExtractor()
 
     def connect(self):
         # Setup connection to etblast databse
@@ -65,21 +66,36 @@ class Medline(object):
 
     def compute(self):
         self.MapOfAbstracts = pickle.load(open("MapOfAbstracts.p", "rb"))
-        fe = FeatureExtractor()
-        extracted_corpus = fe.extract_corpus(self.MapOfAbstracts.values())
-        tfs = fe.vectorize_corpus(extracted_corpus)
-        cosine_matrix = fe.compute_cosine(tfs)
+        extracted_corpus = self.fe.extract_corpus(self.MapOfAbstracts.values())
+        tfs = self.fe.vectorize_corpus(extracted_corpus)
+        cosine_matrix = self.fe.compute_cosine(tfs)
 
-    def compute2(self):
+    def train(self):
         with self.con:
             con = self.con
             cur = con.cursor()
-            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0;")
+            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT 10000;")
             for i in range(cur.rowcount):
                 row = cur.fetchone()
                 if row[1]:
                     self.MapOfAbstracts[row[0]] = row[1]
-        fe = FeatureExtractor()
-        extracted_corpus = fe.extract_corpus(self.MapOfAbstracts.values())
-        tfs = fe.vectorize_corpus(extracted_corpus)
-        cosine_matrix = fe.compute_cosine(tfs)
+        extracted_corpus = self.fe.extract_corpus(self.MapOfAbstracts.values())
+        self.fe.vectorize_corpus(extracted_corpus)
+
+    def test(self):
+        with self.con:
+            con = self.con
+            cur = con.cursor()
+            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT 10000;")
+            for i in range(cur.rowcount):
+                row = cur.fetchone()
+                if row[1]:
+                    self.MapOfAbstracts[row[0]] = row[1]
+        extracted_corpus = self.fe.extract_corpus(self.MapOfAbstracts.values())
+        tfs = self.fe.vectorize_corpus(extracted_corpus)
+        pickle.dump(tfs, open("tfs_sparse.p", "wb"))
+        # tfs_dict = dict()
+        # pmids = self.MapOfAbstracts.keys()
+        # # for i, row in enumerate(tfs):
+        # #     tfs_dict[pmids[i]] = row
+        # # cosine_matrix = fe.compute_cosine(tfs)

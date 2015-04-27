@@ -44,7 +44,12 @@ class FeatureExtractor(object):
 
     def vectorize_corpus(self, extracted_corpus):
         if self.tfidf is None:
-            tfidf = TfidfVectorizer(tokenizer=self.tokenize, stop_words='english')
+            tfidf = TfidfVectorizer(
+                tokenizer=self.tokenize,
+                stop_words='english',
+                min_df=2,
+                smooth_idf=True
+            )
             tfs = tfidf.fit_transform(extracted_corpus)
             self.tfidf = tfidf
             print 'Vectorizer has been trained with', len(tfidf.vocabulary_.keys()), 'words'

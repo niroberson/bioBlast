@@ -9,7 +9,8 @@ m.connect()
 # # m.get_pmids()
 # m.get_abstracts()
 #m.extract_corpus()
-m.compute2()
+m.train()
+m.test()
 
 from FeatureExtractor import FeatureExtractor
 
