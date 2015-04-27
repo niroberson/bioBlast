@@ -87,7 +87,7 @@ class Medline(object):
         with self.con:
             con = self.con
             cur = con.cursor()
-            n_articles = 500000
+            n_articles = "500000"
             cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT" + n_articles + ";")
             rows = cur.fetchall()
             for i, row in enumerate(rows):
