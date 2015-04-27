@@ -22,7 +22,7 @@ class TestFeatureExtractor(TestCase):
         a = "realized realizes realization"
         stemmed = self.feature_extractor.tokenize(a)
         for stem in stemmed:
-            self.assertEqual("realiz", stem)
+            self.assertEqual("realize", stem)
 
     def test_extract_corpus(self):
         extracted = self.feature_extractor.extract_corpus(data)
