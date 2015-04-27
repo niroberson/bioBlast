@@ -74,7 +74,7 @@ class Medline(object):
         with self.con:
             con = self.con
             cur = con.cursor()
-            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT 10000;")
+            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT 200000;")
             for i in range(cur.rowcount):
                 row = cur.fetchone()
                 if row[1]:
@@ -86,9 +86,9 @@ class Medline(object):
         with self.con:
             con = self.con
             cur = con.cursor()
-            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT 10000;")
-            for i in range(cur.rowcount):
-                row = cur.fetchone()
+            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT 500000;")
+            rows = cur.fetchall()
+	    for row in rows:
                 if row[1]:
                     self.MapOfAbstracts[row[0]] = row[1]
         extracted_corpus = self.fe.extract_corpus(self.MapOfAbstracts.values())
