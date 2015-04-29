@@ -79,7 +79,7 @@ class Medline(object):
         tfs_dict = {}
         try:
             tfs_dict = pickle.load(open("tfs_dict.p", "rb"))
-        except IOError, EOFError:
+        except IOError:
             print 'No tfs_dict was found'
         # Add new entries to dict
         for i, row in enumerate(tfs):
@@ -113,8 +113,9 @@ class Medline(object):
             cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT" + n_articles + ";")
             rows = cur.fetchall()
             for i, row in enumerate(rows):
-                if row[1] & row[0] not in self.tfs_dict:
-                    self.MapOfAbstracts[row[0]] = row[1]
+                if row[1]:
+                    if row[0] not in self.tfs_dict:
+                        self.MapOfAbstracts[row[0]] = row[1]
         extracted_corpus = self.fe.extract_corpus(self.MapOfAbstracts.values())
         tfs = self.fe.vectorize_corpus(extracted_corpus)
         self.save_tfs_progress(tfs, self.MapOfAbstracts.keys())
