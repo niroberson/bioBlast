@@ -76,7 +76,7 @@ class Medline(object):
     @staticmethod
     def save_tfs_progress(tfs, pmids):
         # Load tfs storage
-        tfs_dict = pickle.load(open("tfs_dict.p"))
+        tfs_dict = pickle.load(open("tfs_dict.p", "wb"))
         for i, row in enumerate(tfs):
             if pmids[i] not in tfs_dict:
                 tfs_dict[pmids[i]] = row
