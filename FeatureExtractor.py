@@ -6,6 +6,7 @@ from nltk.stem.porter import PorterStemmer
 from sklearn.metrics.pairwise import linear_kernel
 from numpy import hstack
 import heapq
+import cPickle as pickle
 
 class FeatureExtractor(object):
     def __init__(self):
@@ -53,10 +54,17 @@ class FeatureExtractor(object):
             tfs = tfidf.fit_transform(extracted_corpus)
             self.tfidf = tfidf
             print 'Vectorizer has been trained with', len(tfidf.vocabulary_.keys()), 'words'
+            pickle.dump(tfidf, open("tfidf.p", 'wb'))
         else:
             tfidf = self.tfidf
             tfs = tfidf.transform(extracted_corpus)
         return tfs
+
+    def load_tfidf(self):
+        try:
+            self.tfidf = pickle.load(open("tfidf.p", "rb"))
+        except IOError:
+            print "Tfidf does not exist"
 
     def compute_cosine(self, tfs):
         for i, row in enumerate(tfs):
