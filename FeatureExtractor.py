@@ -62,10 +62,10 @@ class FeatureExtractor(object):
 
     def save_tfidf_os(self, tfidf):
         # Save vocabulary used in training
-        pickle.dump(tfidf.vocabulary_, open("trained_tfidf.p", "rb"))
+        pickle.dump(tfidf.vocabulary_, open("trained_tfidf.p", "wb"))
 
     def load_tfidf_os(self):
-        vocab_dict = pickle.load(open("trained_tfidf.p", "wb"))
+        vocab_dict = pickle.load(open("trained_tfidf.p", "rb"))
         self.tfidf = TfidfVectorizer(
                 tokenizer=self.tokenize,
                 stop_words='english',
