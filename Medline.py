@@ -75,11 +75,18 @@ class Medline(object):
 
     @staticmethod
     def save_tfs_progress(tfs, pmids):
-        # Load tfs storage
-        tfs_dict = pickle.load(open("tfs_dict.p", "wb"))
+        # Load tfs storage if available
+        tfs_dict = {}
+        try:
+            tfs_dict = pickle.load(open("tfs_dict.p", "rb"))
+        except IOError:
+            print 'No tfs_dict was found'
+        # Add new entries to dict
         for i, row in enumerate(tfs):
             if pmids[i] not in tfs_dict:
                 tfs_dict[pmids[i]] = row
+        # Save new map
+        pickle.dump(tfs_dict, open("tfs_dict.p", "wb"))
 
     def load_tfs_progress(self):
         self.tfs_dict = pickle.load(open("tfs_dict.p", "rb"))
