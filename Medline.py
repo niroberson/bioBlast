@@ -3,7 +3,7 @@ import MySQLdb as db
 import pickle
 from FeatureExtractor import FeatureExtractor
 import sys
-
+from pymongo import MongoClient
 
 class Medline(object):
     def __init__(self):
@@ -12,66 +12,46 @@ class Medline(object):
         self.pmids = None
         self.fe = FeatureExtractor()
         self.tfs_dict = None
+        self.mongodb = None
 
-    def connect(self):
-        # Setup connection to etblast databse
-        HOST = 'localhost'
-        USER = "johnny"
-        PASSWORD = "johnny"
-        DB = "etblast"
+    def connect_mysql(self, DEBUG=False):
+        # Setup connection to etblast mysql databse
+        if DEBUG:
+            HOST = "localhost"
+            USER = "user"
+            PASSWORD = "password"
+            DB = "bioBlast"
+        else:
+            HOST = 'localhost'
+            USER = "johnny"
+            PASSWORD = "johnny"
+            DB = "etblast"
 
         self.con = db.connect(host=HOST, user=USER, passwd=PASSWORD, db=DB)
 
-    def get_pmids(self):
+    def connect_mongo(self, DEBUG=False):
+        client = MongoClient()
+        if DEBUG:
+            test = client.test
+            return test
+        else:
+            self.mongodb = client.bioBlast
+
+
+    def create_tfs_collection(self):
+        collection = self.mongodb.tfs_matrix
         with self.con:
-            con = self.con
-            cur = con.cursor()
-            cur.execute("SELECT PMID FROM MEDLINE_0;")
-            pmids = []
-            for i in range(cur.rowcount):
-                row = cur.fetchone()
-                if row:
-                    pmids.append(row)
-
-            self.pmids = pmids
-            f = open('pmids.txt', 'w')
-            for pmid in pmids:
-                f.write("%s\n" % pmid)
-
-            f.close()
-
-    def get_abstracts(self):
-        with self.con:
-            con = self.con
-            cur = con.cursor()
+            cur = self.con.cursor()
             cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0;")
-
-            f1 = open('pmids2.txt', 'w')
-            f2 = open('abstracts.txt', 'w')
-            for i in range(cur.rowcount):
-                row = cur.fetchone()
-                if row[1]:
-                    f1.write("%s\n" % row[0])
-                    f2.write("%s\n" % row[1])
-            f1.close()
-            f2.close()
-
-    def extract_corpus(self):
-        with self.con:
-            con = self.con
-            cur = con.cursor()
-            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0;")
-            for i in range(cur.rowcount):
-                row = cur.fetchone()
-                if row[1]:
-                    self.MapOfAbstracts[row[0]] = row[1]
-            pickle.dump(self.MapOfAbstracts, open("MapOfAbstracts.p", "wb"))
-
-    def compute(self):
-        self.MapOfAbstracts = pickle.load(open("MapOfAbstracts.p", "rb"))
-        extracted_corpus = self.fe.extract_corpus(self.MapOfAbstracts.values())
-        tfs = self.fe.vectorize_corpus(extracted_corpus)
-        cosine_matrix = self.fe.compute_cosine(tfs)
+            rows = cur.fetchall()
+            for i, row in enumerate(rows):
+                if row[1] is not None & collection.find_one({"pmid": row[0]}) is None:
+                    tfs_entry = self.fe.vectorize_corpus([row[1]])
+                    post = {
+                        "pmid": row[0],
+                        "tfs_vector": tfs_entry
+                    }
+                    collection.insert_one(post).inserted_id
 
     @staticmethod
     def save_tfs_progress(tfs, pmids):
@@ -91,11 +71,11 @@ class Medline(object):
     def load_tfs_progress(self):
         self.tfs_dict = pickle.load(open("tfs_dict.p", "rb"))
 
-    def train(self):
+    def train_vocabulary(self):
         with self.con:
-            con = self.con
-            cur = con.cursor()
-            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT 200000;")
+            cur = self.con.cursor()
+            n_articles = "500000"
+            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT" + n_articles + ";")
             for i in range(cur.rowcount):
                 row = cur.fetchone()
                 if row[1]:

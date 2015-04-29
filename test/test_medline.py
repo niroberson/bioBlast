@@ -5,6 +5,15 @@ __author__ = 'nathan'
 
 class TestMedline(TestCase):
 
-    def test_get_pmids(self):
-        medline = Medline()
-        medline.get_pmids()
+    def setUp(self):
+        self.m = Medline()
+
+    def test_mysql(self):
+        self.m.connect_mysql(True)
+
+    def test_mongodb(self):
+        test = self.m.connect_mongo(True)
+        test_entry = test.mycollection.find_one({"pmid": "12345678"})
+        self.assertEqual("[1 2 3 4 5 6 7 8]", test_entry["tfs_vector"])
+
+
