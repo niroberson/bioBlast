@@ -18,9 +18,9 @@ class Medline(object):
         # Setup connection to etblast mysql databse
         if DEBUG:
             HOST = "localhost"
-            USER = "user"
+            USER = "test"
             PASSWORD = "password"
-            DB = "bioBlast"
+            DB = "testdb"
         else:
             HOST = 'localhost'
             USER = "johnny"
