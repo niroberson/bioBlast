@@ -79,7 +79,7 @@ class Medline(object):
         tfs_dict = {}
         try:
             tfs_dict = pickle.load(open("tfs_dict.p", "rb"))
-        except IOError:
+        except IOError, EOFError:
             print 'No tfs_dict was found'
         # Add new entries to dict
         for i, row in enumerate(tfs):
