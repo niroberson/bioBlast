@@ -81,6 +81,8 @@ class Medline(object):
             if pmids[i] not in tfs_dict:
                 tfs_dict[pmids[i]] = row
 
+    def load_tfs_progress(self):
+        self.tfs_dict = pickle.load(open("tfs_dict.p", "rb"))
 
     def train(self):
         with self.con:
@@ -109,21 +111,3 @@ class Medline(object):
         extracted_corpus = self.fe.extract_corpus(self.MapOfAbstracts.values())
         tfs = self.fe.vectorize_corpus(extracted_corpus)
         self.save_tfs_progress(tfs, self.MapOfAbstracts.keys())
-
-    @staticmethod
-    def update_progress(progress):
-        print '\r{0}'.format(progress)
-
-    def load_tfs_progress(self):
-        self.tfs_dict = pickle.load(open("tfs_dict.p", "rb"))
-
-
-    def process(self):
-        self.load_progress()
-        with self.con:
-            cur = self.con.cursor()
-            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0;")
-            rows = cur.fetchall()
-            for row in rows:
-                if (row[0]) not in self.processed_pmids:
-                    # tokenize/stem, save
