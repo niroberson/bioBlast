@@ -54,17 +54,25 @@ class FeatureExtractor(object):
             tfs = tfidf.fit_transform(extracted_corpus)
             self.tfidf = tfidf
             print 'Vectorizer has been trained with', len(tfidf.vocabulary_.keys()), 'words'
-            pickle.dump(tfidf, open("tfidf.p", 'wb'))
+            self.save_tfidf_os(tfidf)
         else:
             tfidf = self.tfidf
             tfs = tfidf.transform(extracted_corpus)
         return tfs
 
-    def load_tfidf(self):
-        try:
-            self.tfidf = pickle.load(open("tfidf.p", "rb"))
-        except IOError:
-            print "Tfidf does not exist"
+    def save_tfidf_os(self, tfidf):
+        # Save vocabulary used in training
+        pickle.dump(tfidf.vocabulary_, open("trained_tfidf.p", "rb"))
+
+    def load_tfidf_os(self):
+        vocab_dict = pickle.load(open("trained_tfidf.p", "wb"))
+        self.tfidf = TfidfVectorizer(
+                tokenizer=self.tokenize,
+                stop_words='english',
+                min_df=2,
+                smooth_idf=True,
+                vocabulary=vocab_dict
+            )
 
     def compute_cosine(self, tfs):
         for i, row in enumerate(tfs):
