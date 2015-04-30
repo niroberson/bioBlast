@@ -55,12 +55,8 @@ class FeatureExtractor(object):
             self.save_tfidf_os(self.tfidf)
         else:
             tfidf = self.tfidf
-            tfs = tfidf.transform(extracted_corpus)
+            tfs = tfidf.fit_transform(extracted_corpus)
         return tfs
-
-    def parallel_vectorizer(self, extracted_corpus):
-        if self.tfidf is None:
-            self.load_tfidf_os()
 
     @staticmethod
     def save_tfidf_os(tfidf):
@@ -68,14 +64,12 @@ class FeatureExtractor(object):
         pickle.dump(tfidf.vocabulary_, open("trained_tfidf.p", "wb"))
 
     def load_tfidf_os(self):
-        vocab_dict = pickle.load(open("trained_tfidf.p", "rb"))
+        vocab_dict = pickle.load(open("../trained_tfidf.p", "rb"))
         self.tfidf = TfidfVectorizer(
-                tokenizer=self.tokenize,
-                stop_words='english',
-                min_df=2,
-                smooth_idf=True,
-                vocabulary=vocab_dict
-            )
+            tokenizer=self.tokenize,
+            stop_words='english',
+            vocabulary=vocab_dict
+        )
 
     def compute_cosine(self, tfs):
         for i, row in enumerate(tfs):

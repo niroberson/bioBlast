@@ -38,3 +38,10 @@ class TestFeatureExtractor(TestCase):
         self.feature_extractor.find_matches(data)
         self.assertEqual(self.feature_extractor.results[0][0], self.feature_extractor.results[0][1])
         self.assertEqual(len(data) ** 2, len(self.feature_extractor.results))
+
+    def test_vectorize_A(self):
+        self.feature_extractor.load_tfidf_os()
+        extracted = self.feature_extractor.extract_corpus(data)
+        tfs = self.feature_extractor.vectorize_corpus(extracted)
+        print tfs
+
