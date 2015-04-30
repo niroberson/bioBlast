@@ -48,13 +48,11 @@ class FeatureExtractor(object):
             tfidf = TfidfVectorizer(
                 tokenizer=self.tokenize,
                 stop_words='english',
-                min_df=2,
-                smooth_idf=True
             )
             tfs = tfidf.fit_transform(extracted_corpus)
             self.tfidf = tfidf
             print 'Vectorizer has been trained with', len(tfidf.vocabulary_.keys()), 'words'
-            self.save_tfidf_os(tfidf)
+            self.save_tfidf_os(self.tfidf)
         else:
             tfidf = self.tfidf
             tfs = tfidf.transform(extracted_corpus)
@@ -65,7 +63,7 @@ class FeatureExtractor(object):
             self.load_tfidf_os()
 
     @staticmethod
-    def save_tfidf_os(self, tfidf):
+    def save_tfidf_os(tfidf):
         # Save vocabulary used in training
         pickle.dump(tfidf.vocabulary_, open("trained_tfidf.p", "wb"))
 
