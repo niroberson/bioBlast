@@ -52,9 +52,10 @@ class Medline(object):
                     collection.insert_one(post).inserted_id
 
     def insert_tfs_mysql(self):
-           with self.con:
+        self.fe.load_tfidf_os()
+        with self.con:
             cur = self.con.cursor()
-            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT 20000;")
+            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0;")
             rows = cur.fetchall()
             cur2 = self.con.cursor()
             for i, row in enumerate(rows):
@@ -80,5 +81,12 @@ class Medline(object):
                     self.mapOfAbstracts[row[0]] = row[1]
         extracted_corpus = self.fe.extract_corpus(self.mapOfAbstracts.values())
         tfs = self.fe.vectorize_corpus(extracted_corpus)
+
+
+    def create_tfs_matrix(self):
+        with self.con:
+            cur = self.con.cursor()
+            cur.execute("SELECT PMID, tfs_vector FROM bioBlast")
+            rows = cur.fetchall()
 
 
