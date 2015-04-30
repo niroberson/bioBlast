@@ -60,13 +60,14 @@ class Medline(object):
             for i, row in enumerate(rows):
                 cur2.execute("SELECT * FROM bioBlast WHERE PMID=" + row[0])
                 entry = cur2.fetchone()
-                if row[1] is not None & entry is None:# if not in mysql table, add to table
-                    add_entry = ("INSERT INTO bioBlast "
-                    "(pmid, tfs_vector) "
-                    "VALUES (%s, %s)")
-                    pickled_abstract = pickle.dumps(self.fe.vectorize_corpus([row[1]]))
-                    entry_data = (row[0], pickled_abstract)
-                    cur2.execute(add_entry, entry_data)
+                if row[1] is not None:
+                    if entry is None: # if not in mysql table, add to table
+                        add_entry = ("INSERT INTO bioBlast "
+                        "(pmid, tfs_vector) "
+                        "VALUES (%s, %s)")
+                        pickled_abstract = pickle.dumps(self.fe.vectorize_corpus([row[1]]))
+                        entry_data = (row[0], pickled_abstract)
+                        cur2.execute(add_entry, entry_data)
 
     def train_vocabulary(self):
         with self.con:
