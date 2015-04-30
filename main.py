@@ -8,11 +8,6 @@ m.connect_mysql()
 # # m.get_pmids()
 # m.get_abstracts()
 #m.extract_corpus()
-m.train()
-m.test()
-
-from FeatureExtractor import FeatureExtractor
-
-fe = FeatureExtractor()
-
+m.train_vocabulary()
+m.put_tfs_in_mysql()
 
