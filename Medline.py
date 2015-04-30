@@ -18,10 +18,10 @@ class Medline(object):
         # Setup connection to etblast mysql databse
         if DEBUG:
             HOST = "localhost"
-            USER = "test"
-            PASSWORD = "password"
-            DB = "testdb"
-        else:
+            USER = "johnny"
+            PASSWORD = "johnny"
+            DB = "etblast"
+        else: # Deployed on server
             HOST = 'localhost'
             USER = "johnny"
             PASSWORD = "johnny"
@@ -37,12 +37,11 @@ class Medline(object):
         else:
             self.mongodb = client.bioBlast
 
-
-    def create_tfs_collection(self):
+    def put_tfs_in_mongo(self):
         collection = self.mongodb.tfs_matrix
         with self.con:
             cur = self.con.cursor()
-            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0;")
+            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT 20000;")
             rows = cur.fetchall()
             for i, row in enumerate(rows):
                 if row[1] is not None & collection.find_one({"pmid": row[0]}) is None:
@@ -52,6 +51,14 @@ class Medline(object):
                         "tfs_vector": tfs_entry
                     }
                     collection.insert_one(post).inserted_id
+
+    def put tfs_in_mysql(self):
+           with self.con:
+            cur = self.con.cursor()
+            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT 20000;")
+            rows = cur.fetchall()
+            for i, row in enumerate(rows):
+                if row[1] is not None & # if not in mysql table, add to table
 
     @staticmethod
     def save_tfs_progress(tfs, pmids):
