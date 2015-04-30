@@ -52,7 +52,7 @@ class Medline(object):
                     collection.insert_one(post).inserted_id
 
     def insert_tfs_mysql(self):
-        self.fe.load_tfidf_os()
+        # self.fe.load_tfidf_os()
         with self.con:
             cur = self.con.cursor()
             cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0;")

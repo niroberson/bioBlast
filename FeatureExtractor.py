@@ -65,6 +65,7 @@ class FeatureExtractor(object):
 
     def load_tfidf_os(self):
         vocab_dict = pickle.load(open("trained_tfidf.p", "rb"))
+        print 'Loading trained vector of ' + len(vocab_dict.keys()) + 'word'
         self.tfidf = TfidfVectorizer(
             tokenizer=self.tokenize,
             stop_words='english',
