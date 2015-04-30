@@ -60,6 +60,11 @@ class FeatureExtractor(object):
             tfs = tfidf.transform(extracted_corpus)
         return tfs
 
+    def parallel_vectorizer(self, extracted_corpus):
+        if self.tfidf is None:
+            self.load_tfidf_os()
+
+    @staticmethod
     def save_tfidf_os(self, tfidf):
         # Save vocabulary used in training
         pickle.dump(tfidf.vocabulary_, open("trained_tfidf.p", "wb"))
