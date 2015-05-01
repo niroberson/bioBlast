@@ -5,8 +5,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.stem.porter import PorterStemmer
 from sklearn.metrics.pairwise import linear_kernel
 from numpy import hstack
+import numpy
 import heapq
 import cPickle as pickle
+
 
 class FeatureExtractor(object):
     def __init__(self):
@@ -65,7 +67,6 @@ class FeatureExtractor(object):
 
     def load_tfidf_os(self):
         vocab_dict = pickle.load(open("trained_tfidf.p", "rb"))
-        print 'Loading trained vector of ' + len(vocab_dict.keys()) + 'word'
         self.tfidf = TfidfVectorizer(
             tokenizer=self.tokenize,
             stop_words='english',
@@ -73,17 +74,46 @@ class FeatureExtractor(object):
         )
 
     def compute_cosine(self, tfs):
-        for i, row in enumerate(tfs):
-            self.cosine_matrix = hstack((self.cosine_matrix, linear_kernel(row, tfs).flatten()))
-        return self.cosine_matrix
+        similarity = tfs.dot(tfs.T).todense()
+        return similarity
+
+    def compute_cosine_single(self, tfs_matrix, tfs_vector):
+        return
 
     def find_matches(self, corpus):
         extracted_corpus = self.extract_corpus(corpus)
         tfs = self.vectorize_corpus(extracted_corpus)
         cosine_matrix = self.compute_cosine(tfs)
+        cosine_matrix = list(cosine_matrix.flat)
         sorted_matches = heapq.nlargest(len(cosine_matrix), range(len(cosine_matrix)), key=cosine_matrix.__getitem__)
         for j in sorted_matches:
             row = j / len(corpus)
             column = j % len(corpus)
             self.results.append([corpus[row], corpus[column], cosine_matrix[j]])
         return self.results
+
+    def ngram_vectorizerA(self, corpus):
+        tfidf = TfidfVectorizer(
+            tokenizer=self.tokenize,
+            ngram_range=(2, 5),
+            stop_words='english',
+            lowercase=True,
+            strip_accents='ascii',
+            decode_error='ignore'
+        )
+        tfs = tfidf.fit_transform(corpus)
+        return tfs
+
+    def ngram_vectorizerB(self, corpus):
+        tfidf = TfidfVectorizer(
+            tokenizer=self.tokenize,
+            ngram_range=(1, 5),
+            stop_words='english',
+            lowercase=True,
+            strip_accents='ascii',
+            decode_error='ignore'
+        )
+        tfs = tfidf.fit_transform(corpus)
+        return tfs
+
+

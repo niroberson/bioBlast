@@ -1,5 +1,6 @@
 from unittest import TestCase
 from FeatureExtractor import FeatureExtractor
+import time
 
 __author__ = 'nathan'
 
@@ -31,13 +32,19 @@ class TestFeatureExtractor(TestCase):
     def test_compute_cosine(self):
         extracted = self.feature_extractor.extract_corpus(data)
         tfs = self.feature_extractor.vectorize_corpus(extracted)
-        self.feature_extractor.compute_cosine(tfs)
-        self.assertEqual(36, len(self.feature_extractor.cosine_matrix))
+        cosine_matrix = self.feature_extractor.compute_cosine(tfs)
+        print cosine_matrix
+        self.assertEqual(6, len(cosine_matrix))
+
+    def test_compute_cosine_ngram(self):
+        tfs = self.feature_extractor.ngram_vectorizerA(data)
+        cosine = self.feature_extractor.compute_cosine(tfs)
+        print cosine
 
     def test_get_n_top_matches(self):
-        self.feature_extractor.find_matches(data)
-        self.assertEqual(self.feature_extractor.results[0][0], self.feature_extractor.results[0][1])
-        self.assertEqual(len(data) ** 2, len(self.feature_extractor.results))
+        results = self.feature_extractor.find_matches(data)
+        self.assertEqual(results[0][0], results[0][1])
+        self.assertEqual(len(data) ** 2, len(results))
 
     def test_vectorize_A(self):
         self.feature_extractor.load_tfidf_os()
@@ -45,3 +52,15 @@ class TestFeatureExtractor(TestCase):
         tfs = self.feature_extractor.vectorize_corpus(extracted)
         print tfs
 
+
+    def test_ngram_vectorizerA(self):
+        start = time.time()
+        tfs = self.feature_extractor.ngram_vectorizerA(data)
+        end = time.time()
+        print end - start
+
+    def test_ngram_vectorizerB(self):
+        start = time.time()
+        tfs = self.feature_extractor.ngram_vectorizerB(data)
+        end = time.time()
+        print end-start

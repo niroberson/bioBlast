@@ -16,11 +16,13 @@ class TestMedline(TestCase):
             pickled_vector = pickle.dumps(test_vec)
             x.execute("""INSERT INTO bioBlast VALUES (%s, %s)""", ("12345678", pickled_vector))
 
-
     def test_mongodb(self):
         test = self.m.connect_mongo(True)
         test_entry = test.mycollection.find_one({"pmid": "12345678"})
         self.assertEqual("[1 2 3 4 5 6 7 8]", test_entry["tfs_vector"])
 
+
+    ### Necessary Tests
+        # Test entry exists in database (query database and ensure accurate values)
 
 
