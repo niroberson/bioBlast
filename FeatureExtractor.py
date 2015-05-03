@@ -78,7 +78,8 @@ class FeatureExtractor(object):
         return similarity
 
     def compute_cosine_single(self, tfs_matrix, tfs_vector):
-        return
+        similarity = tfs_vector.dot(tfs_matrix.T).todense()
+        return similarity
 
     def find_matches(self, corpus):
         extracted_corpus = self.extract_corpus(corpus)
@@ -102,6 +103,7 @@ class FeatureExtractor(object):
             decode_error='ignore'
         )
         tfs = tfidf.fit_transform(corpus)
+        self.tfidf = tfidf
         return tfs
 
     def ngram_vectorizerB(self, corpus):
@@ -114,6 +116,7 @@ class FeatureExtractor(object):
             decode_error='ignore'
         )
         tfs = tfidf.fit_transform(corpus)
+        self.tfidf = tfidf
         return tfs
 
 

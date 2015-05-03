@@ -6,5 +6,5 @@ from Medline import Medline
 m = Medline()
 m.connect_mysql()
 m.train_vocabulary()
-m.insert_tfs_mysql()
+m.tfs_insert_mysql_linear()
 

@@ -52,7 +52,6 @@ class TestFeatureExtractor(TestCase):
         tfs = self.feature_extractor.vectorize_corpus(extracted)
         print tfs
 
-
     def test_ngram_vectorizerA(self):
         start = time.time()
         tfs = self.feature_extractor.ngram_vectorizerA(data)
@@ -64,3 +63,10 @@ class TestFeatureExtractor(TestCase):
         tfs = self.feature_extractor.ngram_vectorizerB(data)
         end = time.time()
         print end-start
+
+    def test_compute_single_cosine(self):
+        # Test the response is the identity vector
+        tfs_matrix = self.feature_extractor.ngram_vectorizerA(data)
+        tfs_vector = self.feature_extractor.tfidf.transform([data[0]])
+        cosine = self.feature_extractor.compute_cosine_single(tfs_matrix, tfs_vector)
+        self.assertEquals(1, cosine[0, 0])
