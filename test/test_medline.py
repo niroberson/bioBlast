@@ -21,6 +21,13 @@ class TestMedline(TestCase):
         test_entry = test.mycollection.find_one({"pmid": "12345678"})
         self.assertEqual("[1 2 3 4 5 6 7 8]", test_entry["tfs_vector"])
 
+    def test_insert_tfs(self):
+        self.m.connect_mysql(True)
+        self.m.insert_tfs_vector("123789", "[1 2 3 7 8 9]")
+        cur = self.m.con.cursor()
+        record_check = "SELECT (1) FROM bioBlast WHERE pmid = " + "123789" + " LIMIT 1;"
+        self.assertTrue(cur.execute(record_check))
+        self.m.con.close()
 
     ### Necessary Tests
         # Test entry exists in database (query database and ensure accurate values)

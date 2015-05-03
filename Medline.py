@@ -37,10 +37,6 @@ class Medline(object):
         else:
             self.mongodb = client.bioBlast
 
-    def with_connection(self, f):
-        with self.con:
-            f()
-
     # Finish method if decide to use mongodb
     # def insert_tfs_mongo(self):
     #     collection = self.mongodb.tfs_matrix
@@ -56,6 +52,9 @@ class Medline(object):
     #             }
     #             collection.insert_one(post).inserted_id
 
+    def process_abstracts(self):
+        self.get_tfs_vectors()
+
     # Create a tfs vector for each abstract, enter into table
     def get_tfs_vectors(self):
         cur = self.con.cursor()
@@ -66,6 +65,8 @@ class Medline(object):
             if row[1] is not None:
                 tfs_vector = pickle.dumps(self.fe.test([row[1]]))
                 self.insert_tfs_vector(row[0], tfs_vector)
+            if i % 10000 == 0:
+                print "Processed" + i + " records"
 
     # Insert data if it is not in the table
     def insert_tfs_vector(self, pmid, tfs_vector, overwrite=False):
