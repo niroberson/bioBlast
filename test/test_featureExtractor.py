@@ -33,36 +33,17 @@ class TestFeatureExtractor(TestCase):
         extracted = self.feature_extractor.extract_corpus(data)
         tfs = self.feature_extractor.vectorize_corpus(extracted)
         cosine_matrix = self.feature_extractor.compute_cosine(tfs)
-        print cosine_matrix
         self.assertEqual(6, len(cosine_matrix))
 
     def test_compute_cosine_ngram(self):
         tfs = self.feature_extractor.ngram_vectorizerA(data)
         cosine = self.feature_extractor.compute_cosine(tfs)
-        print cosine
+        self.assertEqual(1, cosine[0,0])
 
     def test_get_n_top_matches(self):
         results = self.feature_extractor.find_matches(data)
         self.assertEqual(results[0][0], results[0][1])
         self.assertEqual(len(data) ** 2, len(results))
-
-    def test_vectorize_A(self):
-        self.feature_extractor.load_tfidf_os()
-        extracted = self.feature_extractor.extract_corpus(data)
-        tfs = self.feature_extractor.vectorize_corpus(extracted)
-        print tfs
-
-    def test_ngram_vectorizerA(self):
-        start = time.time()
-        tfs = self.feature_extractor.ngram_vectorizerA(data)
-        end = time.time()
-        print end - start
-
-    def test_ngram_vectorizerB(self):
-        start = time.time()
-        tfs = self.feature_extractor.ngram_vectorizerB(data)
-        end = time.time()
-        print end-start
 
     def test_compute_single_cosine(self):
         # Test the response is the identity vector

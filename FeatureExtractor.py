@@ -3,9 +3,6 @@ import nltk
 import string
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.stem.porter import PorterStemmer
-from sklearn.metrics.pairwise import linear_kernel
-from numpy import hstack
-import numpy
 import heapq
 import cPickle as pickle
 
