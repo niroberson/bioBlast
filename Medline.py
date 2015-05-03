@@ -73,6 +73,8 @@ class Medline(object):
                     entry_data = (row[0], pickled_abstract)
                     cur2.execute(add_entry, entry_data)
 
+    # Train the vocabulary with n entries
+    # Needs to be verified that n entries have abstracts
     def train_vocabulary(self):
         with self.con:
             cur = self.con.cursor()
@@ -83,8 +85,7 @@ class Medline(object):
                 if row[1]:
                     self.mapOfAbstracts[row[0]] = row[1]
         extracted_corpus = self.fe.extract_corpus(self.mapOfAbstracts.values())
-        tfs = self.fe.vectorize_corpus(extracted_corpus)
-
+        self.fe.train(extracted_corpus)
 
     def create_tfs_matrix(self):
         with self.con:

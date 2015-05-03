@@ -8,7 +8,7 @@ class TestArticle(TestCase):
         article = Article('25896973')
         article.fill_all_fields()
         self.assertEquals("25896973", article.pmid)
-        self.assertEquals("2015 Apr 20", article.date)
+        self.assertEquals("2015 May 1", article.date)
         self.assertEqual("Clinical cancer research : an official journal of the American Association for Cancer Research", article.journal)
 
 

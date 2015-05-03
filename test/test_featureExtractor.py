@@ -31,7 +31,7 @@ class TestFeatureExtractor(TestCase):
 
     def test_compute_cosine(self):
         extracted = self.feature_extractor.extract_corpus(data)
-        tfs = self.feature_extractor.vectorize_corpus(extracted)
+        tfs = self.feature_extractor.test_train(extracted)
         cosine_matrix = self.feature_extractor.compute_cosine(tfs)
         self.assertEqual(6, len(cosine_matrix))
 

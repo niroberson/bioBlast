@@ -42,45 +42,34 @@ class FeatureExtractor(object):
         extracted = no_punctuation
         return extracted
 
-    def vectorize_corpus(self, extracted_corpus):
-        if self.tfidf is None:
-            tfidf = TfidfVectorizer(
-                tokenizer=self.tokenize,
-                stop_words='english',
-            )
-            tfs = tfidf.fit_transform(extracted_corpus)
-            self.tfidf = tfidf
-            print 'Vectorizer has been trained with', len(tfidf.vocabulary_.keys()), 'words'
-            self.save_tfidf_os(self.tfidf)
-        else:
-            tfidf = self.tfidf
-            tfs = tfidf.fit_transform(extracted_corpus)
+    # Train a vectorizers and save resulting vectorizer in objcet
+    def train(self, corpus):
+        self.ngram_vectorizerA(corpus)
+        print 'Vectorizer has been trained with', len(self.tfidf.vocabulary_.keys()), 'words'
+
+    # Test a corpus with the saved vectorizer
+    def test(self, corpus):
+        tfs = self.tfidf.transform(corpus)
         return tfs
 
-    @staticmethod
-    def save_tfidf_os(tfidf):
-        # Save vocabulary used in training
-        pickle.dump(tfidf.vocabulary_, open("trained_tfidf.p", "wb"))
+    # Train and vectorizer and result the resulting tfs matrix
+    def test_train(self, corpus):
+        tfs = self.ngram_vectorizerA(corpus)
+        return tfs
 
-    def load_tfidf_os(self):
-        vocab_dict = pickle.load(open("trained_tfidf.p", "rb"))
-        self.tfidf = TfidfVectorizer(
-            tokenizer=self.tokenize,
-            stop_words='english',
-            vocabulary=vocab_dict
-        )
-
+    # Compute the cosine matrix on a full tfs matrix
     def compute_cosine(self, tfs):
         similarity = tfs.dot(tfs.T).todense()
         return similarity
 
+    # Return the cosine vector for a single entry
     def compute_cosine_single(self, tfs_matrix, tfs_vector):
         similarity = tfs_vector.dot(tfs_matrix.T).todense()
         return similarity
 
     def find_matches(self, corpus):
         extracted_corpus = self.extract_corpus(corpus)
-        tfs = self.vectorize_corpus(extracted_corpus)
+        tfs = self.test_train(extracted_corpus)
         cosine_matrix = self.compute_cosine(tfs)
         cosine_matrix = list(cosine_matrix.flat)
         sorted_matches = heapq.nlargest(len(cosine_matrix), range(len(cosine_matrix)), key=cosine_matrix.__getitem__)
