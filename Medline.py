@@ -66,7 +66,7 @@ class Medline(object):
                 tfs_vector = pickle.dumps(self.fe.test([row[1]]))
                 self.insert_tfs_vector(row[0], tfs_vector)
             if i % 10000 == 0:
-                print "Processed" + i + " records"
+                print "Processed" + str(i) + " records"
 
     # Insert data if it is not in the table
     def insert_tfs_vector(self, pmid, tfs_vector, overwrite=False):
