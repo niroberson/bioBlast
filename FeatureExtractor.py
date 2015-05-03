@@ -67,6 +67,7 @@ class FeatureExtractor(object):
         similarity = tfs_vector.dot(tfs_matrix.T).todense()
         return similarity
 
+    # Stub to find matches from cosine matrix. This will need to be changed once a cosine matrix is created
     def find_matches(self, corpus):
         extracted_corpus = self.extract_corpus(corpus)
         tfs = self.test_train(extracted_corpus)
