@@ -36,9 +36,9 @@ class TestMedline(TestCase):
         self.m.connect_mysql(True)
         self.m.connect_mongo(True)
         self.m.train_vocabulary(10000)
-        self.m.get_tfs_vectors(60001)
+        self.m.get_tfs_vectors(100000)
         count = self.m.coll.count()
-        self.assertEquals(203, count)
+        self.assertEquals(1325, count)
         self.m.con.close()
 
     ### Necessary Tests
