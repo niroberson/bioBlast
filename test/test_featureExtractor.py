@@ -10,8 +10,6 @@ data = ["All of my brother's sons are in college",
         "My brother owns a cow and takes it to his son's college",
         "Spider cows are in the news very often",
         "My brother's son's college is nearby"]
-
-
 data2 = ("All of my brother's daughters are in preschool",)
 data3 = ("When will it be time for lunch?",)
 

@@ -56,17 +56,20 @@ class Medline(object):
         self.get_tfs_vectors()
 
     # Create a tfs vector for each abstract, enter into table
-    def get_tfs_vectors(self):
+    def get_tfs_vectors(self, n_articles=0):
         cur = self.con.cursor()
-        cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0;")
-        cur2 = self.con.cursor()
+        mysql_qry = "SELECT PMID, AbstractText FROM MEDLINE_0"
+        if n_articles > 0:
+            mysql_qry += "LIMIT " + str(n_articles) + ";"
+        cur.execute(mysql_qry)
         for i in range(cur.rowcount):
             row = cur.fetchone()
             if row[1] is not None:
                 tfs_vector = pickle.dumps(self.fe.test([row[1]]))
                 self.insert_tfs_vector(row[0], tfs_vector)
             if i % 10000 == 0:
-                print "Processed" + str(i) + " records"
+                print "Processed " + str(i) + " records"
+        cur.close()
 
     # Insert data if it is not in the table
     def insert_tfs_vector(self, pmid, tfs_vector, overwrite=False):
@@ -77,18 +80,18 @@ class Medline(object):
         # Add mysql query to update if true
         add_record = '''INSERT INTO bioBlast (pmid, tfs_vector) VALUES (%s, %s)'''
         cur.execute(add_record, (pmid, tfs_vector))
+        cur.close()
 
     # Train the vocabulary with n entries
     # Needs to be verified that n entries have abstracts
-    def train_vocabulary(self):
-        with self.con:
-            cur = self.con.cursor()
-            n_articles = "250000"
-            cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT " + n_articles + ";")
-            for i in range(cur.rowcount):
-                row = cur.fetchone()
-                if row[1]:
-                    self.mapOfAbstracts[row[0]] = row[1]
+    def train_vocabulary(self, n_articles):
+        cur = self.con.cursor()
+        cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT " + n_articles + ";")
+        for i in range(cur.rowcount):
+            row = cur.fetchone()
+            if row[1]:
+                self.mapOfAbstracts[row[0]] = row[1]
+        cur.close()
         extracted_corpus = self.fe.extract_corpus(self.mapOfAbstracts.values())
         self.fe.train(extracted_corpus)
 

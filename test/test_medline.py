@@ -29,6 +29,15 @@ class TestMedline(TestCase):
         self.assertTrue(cur.execute(record_check))
         self.m.con.close()
 
+    def test_get_tfs(self):
+        self.m.connect_mysql(True)
+        self.m.train_vocabulary(2000)
+        self.m.get_tfs_vectors(200)
+        cur = self.m.con.cursor()
+        count = cur.execute("SELECT COUNT(*) from bioBlast;")
+        self.assertEquals(200, count)
+        self.m.close()
+
     ### Necessary Tests
         # Test entry exists in database (query database and ensure accurate values)
 
