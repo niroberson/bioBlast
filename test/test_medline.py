@@ -1,7 +1,8 @@
+__author__ = 'nathan'
 from unittest import TestCase
 from Medline import Medline
-__author__ = 'nathan'
 import pickle
+import timeit
 
 class TestMedline(TestCase):
 
@@ -41,7 +42,8 @@ class TestMedline(TestCase):
         self.assertEquals(1325, count)
         self.m.con.close()
 
-    ### Necessary Tests
-        # Test entry exists in database (query database and ensure accurate values)
-
-
+    def time_tests(self):
+        t = timeit.timeit(self.test_mongodb, number=1)
+        print("{:30s} {:f}".format("time mongoDB", t))
+        t2 = timeit.timeit(self.test_get_tfs, number=1)
+        print("{:30s} {:f}".format("time get_tfs", t2))
