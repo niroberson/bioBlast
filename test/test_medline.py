@@ -17,8 +17,11 @@ class TestMedline(TestCase):
             x.execute("""INSERT INTO bioBlast VALUES (%s, %s)""", ("12345678", pickled_vector))
 
     def test_mongodb(self):
-        test = self.m.connect_mongo(True)
-        test_entry = test.mycollection.find_one({"pmid": "12345678"})
+        self.m.connect_mongo(True)
+        pmid = "123789"
+        tfs_vector = "[1 2 3 4 5 6 7 8]"
+        self.m.insert_tfs_mongo(pmid, tfs_vector)
+        test_entry = self.m.mongodb.find_one({"pmid": "123789"})
         self.assertEqual("[1 2 3 4 5 6 7 8]", test_entry["tfs_vector"])
 
     def test_insert_tfs(self):
@@ -31,12 +34,12 @@ class TestMedline(TestCase):
 
     def test_get_tfs(self):
         self.m.connect_mysql(True)
-        self.m.train_vocabulary(2000)
-        self.m.get_tfs_vectors(200)
-        cur = self.m.con.cursor()
-        count = cur.execute("SELECT COUNT(*) from bioBlast;")
-        self.assertEquals(200, count)
-        self.m.close()
+        self.m.connect_mongo(True)
+        self.m.train_vocabulary(10000)
+        self.m.get_tfs_vectors(60001)
+        count = self.m.coll.count()
+        self.assertEquals(203, count)
+        self.m.con.close()
 
     ### Necessary Tests
         # Test entry exists in database (query database and ensure accurate values)

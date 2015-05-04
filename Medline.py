@@ -33,24 +33,19 @@ class Medline(object):
         client = MongoClient()
         if DEBUG:
             test = client.test
-            return test
+            self.mongodb = client.etblast
+            self.coll = client.etblast.test
         else:
-            self.mongodb = client.bioBlast
+            self.mongodb = client.etblast
+            self.coll = client.etblast.bioBlast
 
     # Finish method if decide to use mongodb
-    # def insert_tfs_mongo(self):
-    #     collection = self.mongodb.tfs_matrix
-    #     cur = self.con.cursor()
-    #     cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT 20000;")
-    #     rows = cur.fetchall()
-    #     for i, row in enumerate(rows):
-    #         if row[1] is not None & collection.find_one({"pmid": row[0]}) is None:
-    #             tfs_entry = self.fe.vectorize_corpus([row[1]])
-    #             post = {
-    #                 "pmid": row[0],
-    #                 "tfs_vector": tfs_entry
-    #             }
-    #             collection.insert_one(post).inserted_id
+    def insert_tfs_mongo(self, pmid, tfs_vector):
+        if self.coll.find_one({"pmid": pmid}) is None:
+            post = {}
+            post["pmid"] = pmid
+            post["tfs_vector"] = tfs_vector
+            self.coll.save(post)
 
     def process_abstracts(self):
         self.get_tfs_vectors()
@@ -60,13 +55,15 @@ class Medline(object):
         cur = self.con.cursor()
         mysql_qry = "SELECT PMID, AbstractText FROM MEDLINE_0"
         if n_articles > 0:
-            mysql_qry += "LIMIT " + str(n_articles) + ";"
+            mysql_qry = mysql_qry + ' LIMIT ' + str(n_articles) + ";"
+        else:
+            mysql_qry += ";"
         cur.execute(mysql_qry)
         for i in range(cur.rowcount):
             row = cur.fetchone()
             if row[1] is not None:
                 tfs_vector = pickle.dumps(self.fe.test([row[1]]))
-                self.insert_tfs_vector(row[0], tfs_vector)
+                self.insert_tfs_mongo(row[0], tfs_vector)
             if i % 10000 == 0:
                 print "Processed " + str(i) + " records"
         cur.close()
@@ -86,7 +83,7 @@ class Medline(object):
     # Needs to be verified that n entries have abstracts
     def train_vocabulary(self, n_articles):
         cur = self.con.cursor()
-        cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT " + n_articles + ";")
+        cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT " + str(n_articles) + ";")
         for i in range(cur.rowcount):
             row = cur.fetchone()
             if row[1]:
