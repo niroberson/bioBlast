@@ -1,6 +1,7 @@
 from unittest import TestCase
 from FeatureExtractor import FeatureExtractor
-import time
+import timeit
+import numpy as np
 
 __author__ = 'nathan'
 
@@ -43,9 +44,24 @@ class TestFeatureExtractor(TestCase):
         self.assertEqual(results[0][0], results[0][1])
         self.assertEqual(len(data) ** 2, len(results))
 
-    def test_compute_single_cosine(self):
+    def test_compute_single_cosineA(self):
+        # Test the response is the identity vector
+        tfs_matrix = self.feature_extractor.ngram_vectorizerA(data)
+        tfs_vector = self.feature_extractor.tfidf.transform([data[5]])
+        cosine = self.feature_extractor.compute_cosine_singleA(tfs_matrix, tfs_vector)
+        self.assertEquals(0, cosine[5, 0])
+
+    def test_compute_single_cosineB(self):
         # Test the response is the identity vector
         tfs_matrix = self.feature_extractor.ngram_vectorizerA(data)
         tfs_vector = self.feature_extractor.tfidf.transform([data[0]])
-        cosine = self.feature_extractor.compute_cosine_single(tfs_matrix, tfs_vector)
+        cosine = self.feature_extractor.compute_cosine_singleB(tfs_matrix, tfs_vector)
         self.assertEquals(1, cosine[0, 0])
+
+    def time_tests(self):
+        t = timeit.timeit(self.test_compute_single_cosineA, number=1)
+        print("{:30s} {:f}".format("time single_cosineA", t))
+        t3 = timeit.timeit(self.test_compute_single_cosineB, number=1)
+        print("{:30s} {:f}".format("time single_cosineB", t3))
+        t2 = timeit.timeit(self.test_compute_cosine_ngram, number=1)
+        print("{:30s} {:f}".format("time full cosine", t2))

@@ -4,8 +4,7 @@ import string
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.stem.porter import PorterStemmer
 import heapq
-import cPickle as pickle
-
+import scipy.spatial.distance
 
 class FeatureExtractor(object):
     def __init__(self):
@@ -63,7 +62,11 @@ class FeatureExtractor(object):
         return similarity
 
     # Return the cosine vector for a single entry
-    def compute_cosine_single(self, tfs_matrix, tfs_vector):
+    def compute_cosine_singleA(self, tfs_matrix, tfs_vector):
+        vector = tfs_vector.todense()
+        return scipy.spatial.distance.cdist(tfs_matrix.todense(), vector, 'cosine')
+
+    def compute_cosine_singleB(self, tfs_matrix, tfs_vector):
         similarity = tfs_vector.dot(tfs_matrix.T).todense()
         return similarity
 
