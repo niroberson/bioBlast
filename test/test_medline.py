@@ -21,7 +21,7 @@ class TestMedline(TestCase):
         pmid = "123789"
         tfs_vector = "[1 2 3 4 5 6 7 8]"
         self.m.insert_tfs_mongo(pmid, tfs_vector)
-        test_entry = self.m.mongodb.find_one({"pmid": "123789"})
+        test_entry = self.m.coll.find_one({"pmid": "123789"})
         self.assertEqual("[1 2 3 4 5 6 7 8]", test_entry["tfs_vector"])
 
     def test_insert_tfs(self):

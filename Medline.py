@@ -40,10 +40,11 @@ class Medline(object):
             self.coll = client.etblast.bioBlast
 
     # Finish method if decide to use mongodb
-    def insert_tfs_mongo(self, pmid, tfs_vector):
+    def insert_tfs_mongo(self, pmid, abstract):
         if self.coll.find_one({"pmid": pmid}) is None:
             post = {}
             post["pmid"] = pmid
+            tfs_vector = pickle.dumps(self.fe.test([abstract]))
             post["tfs_vector"] = tfs_vector
             self.coll.save(post)
 
@@ -62,8 +63,7 @@ class Medline(object):
         for i in range(cur.rowcount):
             row = cur.fetchone()
             if row[1] is not None:
-                tfs_vector = pickle.dumps(self.fe.test([row[1]]))
-                self.insert_tfs_mongo(row[0], tfs_vector)
+                self.insert_tfs_mongo(row[0], row[1])
             if i % 10000 == 0:
                 print "Processed " + str(i) + " records"
         cur.close()
