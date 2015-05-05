@@ -2,8 +2,8 @@ __author__ = 'nathan'
 import MySQLdb as db
 import pickle
 from FeatureExtractor import FeatureExtractor
-import sys
 from pymongo import MongoClient
+from scipy.sparse import hstack
 
 
 class Medline(object):
@@ -94,9 +94,11 @@ class Medline(object):
 
     # Go through bioBlast table and collect all tfs vectors
     def create_tfs_matrix(self):
-        with self.con:
-            cur = self.con.cursor()
-            cur.execute("SELECT PMID, tfs_vector FROM bioBlast")
-            rows = cur.fetchall()
-
-
+        cursor = self.coll.find()
+        pmid_list = []
+        tfs_map = {}
+        for record in cursor:
+            tfs_vector = pickle.loads(record["tfs_vector"])
+            tfs_map[record["pmid"]] = tfs_vector
+            pmid_list.append(record["pmid"])
+        return (pmid_list, tfs_map)

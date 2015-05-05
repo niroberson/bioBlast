@@ -24,6 +24,7 @@ class TestMedline(TestCase):
         self.m.insert_tfs_mongo(pmid, tfs_vector)
         test_entry = self.m.coll.find_one({"pmid": "123789"})
         self.assertEqual("[1 2 3 4 5 6 7 8]", test_entry["tfs_vector"])
+        self.m.coll.remove({"pmid": "123789"})
 
     def test_insert_tfs(self):
         self.m.connect_mysql(True)
@@ -39,8 +40,16 @@ class TestMedline(TestCase):
         self.m.train_vocabulary(10000)
         self.m.get_tfs_vectors(100000)
         count = self.m.coll.count()
-        self.assertEquals(1325, count)
+        self.assertEqual(1324, count)
         self.m.con.close()
+
+    def test_get_tfs_vectors(self):
+        self.m.connect_mongo(True)
+        pmid_list, tfs_map = self.m.create_tfs_matrix()
+        self.assertEqual(1324, len(pmid_list))
+        self.assertEqual(1324, len(tfs_map))
+        print(tfs_map.values())
+
 
     def time_tests(self):
         t = timeit.timeit(self.test_mongodb, number=1)

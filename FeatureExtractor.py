@@ -5,7 +5,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.stem.porter import PorterStemmer
 import heapq
 import scipy.spatial.distance
-
 class FeatureExtractor(object):
     def __init__(self):
         self.corpus = None
