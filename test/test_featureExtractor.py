@@ -50,9 +50,9 @@ class TestFeatureExtractor(TestCase):
 
     def time_tests(self):
         t3 = timeit.timeit(self.test_compute_single_cosine, number=1)
-        print("{:30s} {:f}".format("time single_cosineB", t3))
-        t2 = timeit.timeit(self.test_compute_cosine_ngram, number=1)
-        print("{:30s} {:f}".format("time full cosine", t2))
+        print("{:30s} {:f}".format("time single_cosine", t3))
+        t = timeit.timeit(self.test_compute_cosine, number=1)
+        print("{:30s} {:f}".format("time full cosine", t))
 
     def test_load_vector(self):
         self.feature_extractor.train(data)
