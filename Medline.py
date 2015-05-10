@@ -8,12 +8,11 @@ from scipy.sparse import hstack
 
 class Medline(object):
     def __init__(self):
-        self.msql = None
+        self.mysql = None
         self.pmids = None
         self.fe = FeatureExtractor()
         self.tfs_dict = None
         self.mongodb = None
-        self.mapOfAbstracts = dict()
         self.mongo_coll = None
 
     def connect_mysql(self, DEBUG=False):
@@ -85,15 +84,16 @@ class Medline(object):
     # Train the vocabulary with n entries
     # Needs to be verified that n entries have abstracts
     def train_vocabulary(self, n_articles):
+        abstract_dict = dict()
         with self.mysql:
             cur = self.mysql.cursor()
             cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT " + str(n_articles) + ";")
             for i in range(cur.rowcount):
                 row = cur.fetchone()
                 if row[1]:
-                    self.mapOfAbstracts[row[0]] = row[1]
+                    abstract_dict[row[0]] = row[1]
             cur.close()
-            extracted_corpus = self.fe.extract_corpus(self.mapOfAbstracts.values())
+            extracted_corpus = self.fe.extract_corpus(abstract_dict.values())
             self.fe.train(extracted_corpus)
 
     # Go through bioBlast table and collect all tfs vectors
@@ -105,4 +105,4 @@ class Medline(object):
             tfs_vector = pickle.loads(record["tfs_vector"])
             tfs_map[record["pmid"]] = tfs_vector
             pmid_list.append(record["pmid"])
-        return (pmid_list, tfs_map)
+        return pmid_list, tfs_map

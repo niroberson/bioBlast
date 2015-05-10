@@ -1,12 +1,12 @@
 __author__ = 'nathan'
 from sklearn.externals import joblib
-from sklearn.feature_extraction.text import CountVectorizer
 import nltk
 import string
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.stem.porter import PorterStemmer
 import heapq
-import scipy.spatial.distance
+
+
 class FeatureExtractor(object):
     def __init__(self):
         self.corpus = None
@@ -42,6 +42,17 @@ class FeatureExtractor(object):
         extracted = no_punctuation
         return extracted
 
+    # This is the vectorizer with are working with that currently uses unigrams and bigrams
+    def initialize_vector(self):
+        tfidf = TfidfVectorizer(
+            ngram_range=(1, 2),
+            stop_words='english',
+            lowercase=True,
+            strip_accents='ascii',
+            decode_error='ignore'
+        )
+        return tfidf
+
     # Train a vectorizers and save resulting vectorizer in object
     def train(self, corpus, save=True):
         vec = self.initialize_vector()
@@ -58,15 +69,19 @@ class FeatureExtractor(object):
 
     # Test a corpus with the saved vectorizer
     def test(self, corpus):
-        tfs = self.tfidf.transform(corpus)
+        extracted_corpus = self.extract_corpus(corpus)
+        tfs = self.tfidf.transform(extracted_corpus)
         return tfs
 
     # Compute the cosine matrix on a full tfs matrix
-    def compute_cosine(self, tfs):
+    @staticmethod
+    def compute_cosine(tfs):
         similarity = tfs.dot(tfs.T).todense()
         return similarity
 
-    def compute_cosine_single(self, tfs_matrix, tfs_vector):
+    # computes the most similar documents to a single entry
+    @staticmethod
+    def compute_cosine_single(tfs_matrix, tfs_vector):
         similarity = tfs_vector.dot(tfs_matrix.T).todense()
         return similarity
 
@@ -74,7 +89,7 @@ class FeatureExtractor(object):
     def find_matches(self, corpus):
         extracted_corpus = self.extract_corpus(corpus)
         tfs = self.train(extracted_corpus)
-        cosine_matrix = self.compute_cosine(tfs)
+        cosine_matrix = self.compute_cosine
         cosine_matrix = list(cosine_matrix.flat)
         sorted_matches = heapq.nlargest(len(cosine_matrix), range(len(cosine_matrix)), key=cosine_matrix.__getitem__)
         for j in sorted_matches:
@@ -83,13 +98,5 @@ class FeatureExtractor(object):
             self.results.append([corpus[row], corpus[column], cosine_matrix[j]])
         return self.results
 
-    def initialize_vector(self):
-        tfidf = TfidfVectorizer(
-            ngram_range=(1, 2),
-            stop_words='english',
-            lowercase=True,
-            strip_accents='ascii',
-            decode_error='ignore'
-        )
-        return tfidf
+
 
