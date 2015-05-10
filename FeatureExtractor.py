@@ -1,5 +1,4 @@
 __author__ = 'nathan'
-from sklearn.externals import joblib
 import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.stem.porter import PorterStemmer
@@ -40,7 +39,7 @@ class FeatureExtractor(object):
     def train(self, corpus, save=True):
         vec = self.initialize_vector()
         tfs = vec.fit_transform(corpus)
-        print 'Vectorizer has been trained with', len(vec.vocabulary_.keys()), 'words'
+        print 'Vectorizer has been trained with', len(vec.vocabulary_.keys()), 'ngrams'
         if save:
             pickle.dump(vec, open('trained_vector.dill', 'wb'))
         self.tfidf = vec
