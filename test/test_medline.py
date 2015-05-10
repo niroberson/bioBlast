@@ -30,7 +30,7 @@ class TestMedline(TestCase):
         self.m.connect_mysql(True)
         self.m.connect_mongo(True)
         self.m.train_vocabulary(10000)
-        self.m.process_abstracts(100000)
+        self.m.process_abstracts(start=0, limit=100000)
         count = self.m.mongo_coll.count()
         self.assertEqual(1324, count)
         self.m.mysql.close()

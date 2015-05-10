@@ -49,12 +49,12 @@ class Medline(object):
             self.mongo_coll.save(post)
 
     # Create a tfs vector for each abstract, enter into table
-    def process_abstracts(self, n_articles=0):
+    def process_abstracts(self, start=0, limit=0):
         with self.mysql:
             cur = self.mysql.cursor()
             mysql_qry = "SELECT PMID, AbstractText FROM MEDLINE_0"
-            if n_articles > 0:
-                mysql_qry = mysql_qry + ' LIMIT ' + str(n_articles) + ";"
+            if limit > 0:
+                mysql_qry = mysql_qry + ' LIMIT ' + str(start) + "," + str(limit) + ";"
             else:
                 mysql_qry += ";"
             cur.execute(mysql_qry)
