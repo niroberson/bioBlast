@@ -26,19 +26,11 @@ class TestMedline(TestCase):
         self.assertEqual("[1 2 3 4 5 6 7 8]", test_entry["tfs_vector"])
         self.m.mongo_coll.remove({"pmid": "123789"})
 
-    def test_insert_tfs(self):
-        self.m.connect_mysql(True)
-        self.m.insert_tfs_vector("123789", "[1 2 3 7 8 9]")
-        cur = self.m.mysql.cursor()
-        record_check = "SELECT (1) FROM bioBlast WHERE pmid = " + "123789" + " LIMIT 1;"
-        self.assertTrue(cur.execute(record_check))
-        self.m.mysql.close()
-
     def test_get_tfs(self):
         self.m.connect_mysql(True)
         self.m.connect_mongo(True)
         self.m.train_vocabulary(10000)
-        self.m.get_tfs_vectors(100000)
+        self.m.process_abstracts(100000)
         count = self.m.mongo_coll.count()
         self.assertEqual(1324, count)
         self.m.mysql.close()
