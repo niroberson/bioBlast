@@ -11,8 +11,8 @@ class TestMedline(TestCase):
 
     def test_mysql(self):
         self.m.connect_mysql(True)
-        with self.m.con:
-            x = self.m.con.cursor()
+        with self.m.mysql:
+            x = self.m.mysql.cursor()
             test_vec = [1, 2, 3, 4, 5, 6]
             pickled_vector = pickle.dumps(test_vec)
             x.execute("""INSERT INTO bioBlast VALUES (%s, %s)""", ("12345678", pickled_vector))
@@ -22,33 +22,32 @@ class TestMedline(TestCase):
         pmid = "123789"
         tfs_vector = "[1 2 3 4 5 6 7 8]"
         self.m.insert_tfs_mongo(pmid, tfs_vector)
-        test_entry = self.m.coll.find_one({"pmid": "123789"})
+        test_entry = self.m.mongo_coll.find_one({"pmid": "123789"})
         self.assertEqual("[1 2 3 4 5 6 7 8]", test_entry["tfs_vector"])
-        self.m.coll.remove({"pmid": "123789"})
+        self.m.mongo_coll.remove({"pmid": "123789"})
 
     def test_insert_tfs(self):
         self.m.connect_mysql(True)
         self.m.insert_tfs_vector("123789", "[1 2 3 7 8 9]")
-        cur = self.m.con.cursor()
+        cur = self.m.mysql.cursor()
         record_check = "SELECT (1) FROM bioBlast WHERE pmid = " + "123789" + " LIMIT 1;"
         self.assertTrue(cur.execute(record_check))
-        self.m.con.close()
+        self.m.mysql.close()
 
     def test_get_tfs(self):
         self.m.connect_mysql(True)
         self.m.connect_mongo(True)
         self.m.train_vocabulary(10000)
         self.m.get_tfs_vectors(100000)
-        count = self.m.coll.count()
+        count = self.m.mongo_coll.count()
         self.assertEqual(1324, count)
-        self.m.con.close()
+        self.m.mysql.close()
 
     def test_get_tfs_vectors(self):
         self.m.connect_mongo(True)
         pmid_list, tfs_map = self.m.create_tfs_matrix()
         self.assertEqual(1324, len(pmid_list))
         self.assertEqual(1324, len(tfs_map))
-        print(tfs_map.values())
 
 
     def time_tests(self):

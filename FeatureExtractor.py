@@ -1,4 +1,5 @@
 __author__ = 'nathan'
+import joblib
 import nltk
 import string
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -40,10 +41,14 @@ class FeatureExtractor(object):
         extracted = no_punctuation
         return extracted
 
-    # Train a vectorizers and save resulting vectorizer in objcet
+    # Train a vectorizers and save resulting vectorizer in object
     def train(self, corpus):
         self.ngram_vectorizerA(corpus)
+        joblib.dump(self.tfidf, 'trained_vector.joblib')
         print 'Vectorizer has been trained with', len(self.tfidf.vocabulary_.keys()), 'words'
+
+    def load_vector(self):
+        self.tfidf = joblib.load('trained_vector.joblib')
 
     # Test a corpus with the saved vectorizer
     def test(self, corpus):
@@ -85,7 +90,7 @@ class FeatureExtractor(object):
     def ngram_vectorizerA(self, corpus):
         tfidf = TfidfVectorizer(
             tokenizer=self.tokenize,
-            ngram_range=(2, 5),
+            ngram_range=(1, 2),
             stop_words='english',
             lowercase=True,
             strip_accents='ascii',
