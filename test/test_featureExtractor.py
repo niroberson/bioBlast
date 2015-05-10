@@ -30,44 +30,36 @@ class TestFeatureExtractor(TestCase):
 
     def test_compute_cosine(self):
         extracted = self.feature_extractor.extract_corpus(data)
-        tfs = self.feature_extractor.test_train(extracted)
+        tfs = self.feature_extractor.train(extracted)
         cosine_matrix = self.feature_extractor.compute_cosine(tfs)
         self.assertEqual(6, len(cosine_matrix))
 
     def test_compute_cosine_ngram(self):
-        tfs = self.feature_extractor.ngram_vectorizerA(data)
+        tfs = self.feature_extractor.train(data)
         cosine = self.feature_extractor.compute_cosine(tfs)
-        self.assertEqual(1, cosine[0,0])
+        self.assertAlmostEqual(1, cosine[0,0])
 
     def test_get_n_top_matches(self):
         results = self.feature_extractor.find_matches(data)
         self.assertEqual(results[0][0], results[0][1])
         self.assertEqual(len(data) ** 2, len(results))
 
-    def test_compute_single_cosineA(self):
+    def test_compute_single_cosine(self):
         # Test the response is the identity vector
-        tfs_matrix = self.feature_extractor.ngram_vectorizerA(data)
-        tfs_vector = self.feature_extractor.tfidf.transform([data[5]])
-        cosine = self.feature_extractor.compute_cosine_singleA(tfs_matrix, tfs_vector)
-        self.assertEquals(0, cosine[5, 0])
-
-    def test_compute_single_cosineB(self):
-        # Test the response is the identity vector
-        tfs_matrix = self.feature_extractor.ngram_vectorizerA(data)
-        tfs_vector = self.feature_extractor.tfidf.transform([data[0]])
-        cosine = self.feature_extractor.compute_cosine_singleB(tfs_matrix, tfs_vector)
-        self.assertEquals(1, cosine[0, 0])
+        tfs_matrix = self.feature_extractor.train(data)
+        extracted_entry = self.feature_extractor.extract_entry(data[0])
+        tfs_vector = self.feature_extractor.tfidf.transform([extracted_entry])
+        cosine = self.feature_extractor.compute_cosine_single(tfs_matrix, tfs_vector)
+        self.assertAlmostEquals(1, cosine[0, 0])
 
     def time_tests(self):
-        t = timeit.timeit(self.test_compute_single_cosineA, number=1)
-        print("{:30s} {:f}".format("time single_cosineA", t))
-        t3 = timeit.timeit(self.test_compute_single_cosineB, number=1)
+        t3 = timeit.timeit(self.test_compute_single_cosine, number=1)
         print("{:30s} {:f}".format("time single_cosineB", t3))
         t2 = timeit.timeit(self.test_compute_cosine_ngram, number=1)
         print("{:30s} {:f}".format("time full cosine", t2))
 
     def test_load_vector(self):
-        self.feature_extractor.trainB(data)
+        self.feature_extractor.train(data)
         self.feature_extractor.load_vector()
         results = self.feature_extractor.test(data)
         self.assertEquals(6, len(results.todense()))

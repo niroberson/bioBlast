@@ -43,16 +43,15 @@ class FeatureExtractor(object):
         return extracted
 
     # Train a vectorizers and save resulting vectorizer in object
-    def train(self, corpus):
-        self.ngram_vectorizerA(corpus)
-        joblib.dump(self.tfidf, 'trained_vector.joblib')
-        print 'Vectorizer has been trained with', len(self.tfidf.vocabulary_.keys()), 'words'
-
-    def trainB(self, corpus):
+    def train(self, corpus, save=True):
         vec = self.initialize_vector()
         extracted_corpus = self.extract_corpus(corpus)
-        vec.fit(extracted_corpus)
-        joblib.dump(vec, 'trained_vector.joblib')
+        tfs = vec.fit_transform(extracted_corpus)
+        print 'Vectorizer has been trained with', len(vec.vocabulary_.keys()), 'words'
+        if save:
+            joblib.dump(vec, 'trained_vector.joblib')
+        self.tfidf = vec
+        return tfs
 
     def load_vector(self):
         self.tfidf = joblib.load('trained_vector.joblib')
@@ -62,29 +61,19 @@ class FeatureExtractor(object):
         tfs = self.tfidf.transform(corpus)
         return tfs
 
-    # Train and vectorize and result the resulting tfs matrix
-    def test_train(self, corpus):
-        tfs = self.ngram_vectorizerA(corpus)
-        return tfs
-
     # Compute the cosine matrix on a full tfs matrix
     def compute_cosine(self, tfs):
         similarity = tfs.dot(tfs.T).todense()
         return similarity
 
-    # Return the cosine vector for a single entry
-    def compute_cosine_singleA(self, tfs_matrix, tfs_vector):
-        vector = tfs_vector.todense()
-        return scipy.spatial.distance.cdist(tfs_matrix.todense(), vector, 'cosine')
-
-    def compute_cosine_singleB(self, tfs_matrix, tfs_vector):
+    def compute_cosine_single(self, tfs_matrix, tfs_vector):
         similarity = tfs_vector.dot(tfs_matrix.T).todense()
         return similarity
 
     # Stub to find matches from cosine matrix. This will need to be changed once a cosine matrix is created
     def find_matches(self, corpus):
         extracted_corpus = self.extract_corpus(corpus)
-        tfs = self.test_train(extracted_corpus)
+        tfs = self.train(extracted_corpus)
         cosine_matrix = self.compute_cosine(tfs)
         cosine_matrix = list(cosine_matrix.flat)
         sorted_matches = heapq.nlargest(len(cosine_matrix), range(len(cosine_matrix)), key=cosine_matrix.__getitem__)
@@ -103,32 +92,4 @@ class FeatureExtractor(object):
             decode_error='ignore'
         )
         return tfidf
-
-
-    def ngram_vectorizerA(self, corpus):
-        tfidf = TfidfVectorizer(
-            tokenizer=self.tokenize,
-            ngram_range=(1, 2),
-            stop_words='english',
-            lowercase=True,
-            strip_accents='ascii',
-            decode_error='ignore'
-        )
-        tfs = tfidf.fit_transform(corpus)
-        self.tfidf = tfidf
-        return tfs
-
-    def ngram_vectorizerB(self, corpus):
-        tfidf = TfidfVectorizer(
-            tokenizer=self.tokenize,
-            ngram_range=(1, 5),
-            stop_words='english',
-            lowercase=True,
-            strip_accents='ascii',
-            decode_error='ignore'
-        )
-        tfs = tfidf.fit_transform(corpus)
-        self.tfidf = tfidf
-        return tfs
-
 
