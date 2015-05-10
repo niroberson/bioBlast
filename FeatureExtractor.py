@@ -1,5 +1,6 @@
 __author__ = 'nathan'
-import joblib
+from sklearn.externals import joblib
+from sklearn.feature_extraction.text import CountVectorizer
 import nltk
 import string
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -47,6 +48,12 @@ class FeatureExtractor(object):
         joblib.dump(self.tfidf, 'trained_vector.joblib')
         print 'Vectorizer has been trained with', len(self.tfidf.vocabulary_.keys()), 'words'
 
+    def trainB(self, corpus):
+        vec = self.initialize_vector()
+        extracted_corpus = self.extract_corpus(corpus)
+        vec.fit(extracted_corpus)
+        joblib.dump(vec, 'trained_vector.joblib')
+
     def load_vector(self):
         self.tfidf = joblib.load('trained_vector.joblib')
 
@@ -55,7 +62,7 @@ class FeatureExtractor(object):
         tfs = self.tfidf.transform(corpus)
         return tfs
 
-    # Train and vectorizer and result the resulting tfs matrix
+    # Train and vectorize and result the resulting tfs matrix
     def test_train(self, corpus):
         tfs = self.ngram_vectorizerA(corpus)
         return tfs
@@ -86,6 +93,17 @@ class FeatureExtractor(object):
             column = j % len(corpus)
             self.results.append([corpus[row], corpus[column], cosine_matrix[j]])
         return self.results
+
+    def initialize_vector(self):
+        tfidf = TfidfVectorizer(
+            ngram_range=(1, 2),
+            stop_words='english',
+            lowercase=True,
+            strip_accents='ascii',
+            decode_error='ignore'
+        )
+        return tfidf
+
 
     def ngram_vectorizerA(self, corpus):
         tfidf = TfidfVectorizer(

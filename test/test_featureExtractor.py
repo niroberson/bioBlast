@@ -65,3 +65,9 @@ class TestFeatureExtractor(TestCase):
         print("{:30s} {:f}".format("time single_cosineB", t3))
         t2 = timeit.timeit(self.test_compute_cosine_ngram, number=1)
         print("{:30s} {:f}".format("time full cosine", t2))
+
+    def test_load_vector(self):
+        self.feature_extractor.trainB(data)
+        self.feature_extractor.load_vector()
+        results = self.feature_extractor.test(data)
+        self.assertEquals(6, len(results.todense()))
