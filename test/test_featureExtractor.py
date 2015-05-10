@@ -33,11 +33,7 @@ class TestFeatureExtractor(TestCase):
         tfs = self.feature_extractor.train(extracted)
         cosine_matrix = self.feature_extractor.compute_cosine(tfs)
         self.assertEqual(6, len(cosine_matrix))
-
-    def test_compute_cosine_ngram(self):
-        tfs = self.feature_extractor.train(data)
-        cosine = self.feature_extractor.compute_cosine(tfs)
-        self.assertAlmostEqual(1, cosine[0,0])
+        self.assertAlmostEqual(1, cosine_matrix[0,0])
 
     def test_get_n_top_matches(self):
         results = self.feature_extractor.find_matches(data)
