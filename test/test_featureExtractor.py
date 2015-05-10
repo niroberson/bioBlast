@@ -20,17 +20,13 @@ class TestFeatureExtractor(TestCase):
 
     def test_tokenize(self):
         a = "realized realizes realization"
-        stemmed = self.feature_extractor.tokenize(a)
+        stemmed = FeatureExtractor.tokenize(a)
         for stem in stemmed:
             self.assertEqual("realiz", stem)
 
-    def test_extract_corpus(self):
-        extracted = self.feature_extractor.extract_corpus(data)
-        self.assertEqual(6, len(extracted))
-
     def test_compute_cosine(self):
         tfs = self.feature_extractor.train(data)
-        cosine_matrix = self.feature_extractor.compute_cosine
+        cosine_matrix = self.feature_extractor.compute_cosine(tfs)
         self.assertEqual(6, len(cosine_matrix))
         self.assertAlmostEqual(1, cosine_matrix[0,0])
 
@@ -42,8 +38,7 @@ class TestFeatureExtractor(TestCase):
     def test_compute_single_cosine(self):
         # Test the response is the identity vector
         tfs_matrix = self.feature_extractor.train(data)
-        extracted_entry = self.feature_extractor.extract_entry(data[0])
-        tfs_vector = self.feature_extractor.tfidf.transform([extracted_entry])
+        tfs_vector = self.feature_extractor.tfidf.transform([data[0]])
         cosine = self.feature_extractor.compute_cosine_single(tfs_matrix, tfs_vector)
         self.assertAlmostEquals(1, cosine[0, 0])
 
@@ -55,6 +50,7 @@ class TestFeatureExtractor(TestCase):
 
     def test_load_vector(self):
         self.feature_extractor.train(data)
+        del self.feature_extractor.tfidf
         self.feature_extractor.load_vector()
         results = self.feature_extractor.test(data)
         self.assertEquals(6, len(results.todense()))
