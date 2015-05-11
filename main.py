@@ -1,6 +1,7 @@
 __author__ = 'nathan'
 
 from Medline import Medline
+import os.path
 
 m = Medline()
 

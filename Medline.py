@@ -3,7 +3,7 @@ import MySQLdb as db
 import pickle
 from FeatureExtractor import FeatureExtractor
 from pymongo import MongoClient
-from scipy.sparse import hstack
+import os.path
 import multiprocessing
 from contextlib import closing
 
@@ -92,6 +92,10 @@ class Medline(object):
     # Train the vocabulary with n entries
     # Needs to be verified that n entries have abstracts
     def train_vocabulary(self, n_articles):
+        if os.path.isfile("trained_vector.dill"):
+            self.fe.load_vector()
+            print "Loaded saved vector model"
+            return
         abstract_dict = dict()
         with self.mysql:
             cur = self.mysql.cursor()
