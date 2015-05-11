@@ -30,16 +30,16 @@ class TestMedline(TestCase):
         self.m.connect_mysql(True)
         self.m.connect_mongo(True)
         self.m.train_vocabulary(10000)
-        self.m.process_abstracts(start=0, limit=100000)
+        self.m.process_abstracts(self.m.mysql, start=0, limit=10000)
         count = self.m.mongo_coll.count()
-        self.assertEqual(1324, count)
+        self.assertEqual(9, count)
         self.m.mysql.close()
 
     def test_get_tfs_vectors(self):
         self.m.connect_mongo(True)
         pmid_list, tfs_map = self.m.create_tfs_matrix()
-        self.assertEqual(1324, len(pmid_list))
-        self.assertEqual(1324, len(tfs_map))
+        self.assertEqual(9, len(pmid_list))
+        self.assertEqual(9, len(tfs_map))
 
 
     def time_tests(self):
@@ -47,3 +47,9 @@ class TestMedline(TestCase):
         print("{:30s} {:f}".format("time mongoDB", t))
         t2 = timeit.timeit(self.test_get_tfs, number=1)
         print("{:30s} {:f}".format("time get_tfs", t2))
+
+    def test_multiprocess_abstracts(self):
+        self.m.connect_mongo(True)
+        self.m.connect_mysql(True)
+        self.m.train_vocabulary(10000)
+        self.m.queue_process()

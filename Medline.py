@@ -4,7 +4,7 @@ import pickle
 from FeatureExtractor import FeatureExtractor
 from pymongo import MongoClient
 from scipy.sparse import hstack
-
+import multiprocessing
 
 class Medline(object):
     def __init__(self):
@@ -28,6 +28,7 @@ class Medline(object):
             PASSWORD = "johnny"
             DB = "etblast"
         self.mysql = db.connect(host=HOST, user=USER, passwd=PASSWORD, db=DB)
+        return self.mysql
 
     def connect_mongo(self, DEBUG=False):
         client = MongoClient()
@@ -48,12 +49,23 @@ class Medline(object):
             post["tfs_vector"] = tfs_vector
             self.mongo_coll.save(post)
 
+    def queue_process(self):
+        # Load in the progress of method, call method with correct inputs
+        jobs = []
+        n = 10000
+        for i in range(4):
+            mysql = self.connect_mysql()
+            x = i * 10000
+            p = multiprocessing.Process(target=self.process_abstracts, args=(mysql, x, n))
+            jobs.append(p)
+            p.start()
+
     # Create a tfs vector for each abstract, enter into table
-    def process_abstracts(self, start=0, limit=0):
-        with self.mysql:
+    def process_abstracts(self, mysql, start=0, limit=0):
+        with mysql:
             cur = self.mysql.cursor()
             mysql_qry = "SELECT PMID, AbstractText FROM MEDLINE_0"
-            if limit > 0:
+            if start > 0 or limit > 0:
                 mysql_qry = mysql_qry + ' LIMIT ' + str(start) + "," + str(limit) + ";"
             else:
                 mysql_qry += ";"
