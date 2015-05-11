@@ -60,6 +60,9 @@ class Medline(object):
                 p = multiprocessing.Process(target=self.process_abstracts, args=(mysql, x, n))
                 jobs.append(p)
                 p.start()
+        if count % 100000 > 0:
+            mysql = self.connect_mysql()
+            self.process_abstracts(mysql, count - (count % 100000), count % 100000)
 
     # Create a tfs vector for each abstract, enter into table
     def process_abstracts(self, mysql, start=0, limit=0):
