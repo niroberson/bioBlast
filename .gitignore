@@ -3,3 +3,4 @@ weeklyUpdates/*
 *.pyc
 data/*
 *.sql
+*.dill
