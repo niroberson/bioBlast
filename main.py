@@ -11,4 +11,4 @@ m.train_vocabulary(250000)
 # Connect to mysql, mongo and process all abstracts
 m.connect_mysql()
 m.connect_mongo()
-m.process_abstracts()
+# m.queue_process(25000000)

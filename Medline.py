@@ -49,19 +49,21 @@ class Medline(object):
             post["tfs_vector"] = tfs_vector
             self.mongo_coll.save(post)
 
-    def queue_process(self):
+    def queue_process(self, count):
         # Load in the progress of method, call method with correct inputs
         jobs = []
         n = 10000
-        for i in range(4):
-            mysql = self.connect_mysql()
-            x = i * 10000
-            p = multiprocessing.Process(target=self.process_abstracts, args=(mysql, x, n))
-            jobs.append(p)
-            p.start()
+        for j in range(1, count / 100000 + 1):
+            for i in range(10):
+                mysql = self.connect_mysql()
+                x = j * i * 10000
+                p = multiprocessing.Process(target=self.process_abstracts, args=(mysql, x, n))
+                jobs.append(p)
+                p.start()
 
     # Create a tfs vector for each abstract, enter into table
     def process_abstracts(self, mysql, start=0, limit=0):
+        print "Starting: " + str(start) + " to " + str(start + limit)
         with mysql:
             cur = self.mysql.cursor()
             mysql_qry = "SELECT PMID, AbstractText FROM MEDLINE_0"
@@ -74,9 +76,8 @@ class Medline(object):
                 row = cur.fetchone()
                 if row[1] is not None:
                     self.insert_tfs_mongo(row[0], row[1])
-                if i % 10000 == 0:
-                    print "Processed " + str(i) + " records"
             cur.close()
+        print "Exiting: " + str(start) + " to " + str(start + limit)
 
     # Train the vocabulary with n entries
     # Needs to be verified that n entries have abstracts
