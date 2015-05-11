@@ -54,10 +54,10 @@ class Medline(object):
         # Load in the progress of method, call method with correct inputs
         n = 10000
         jobs = []
-        for j in range(1, count, n*10):
+        for j in range(0, count, n*10):
             for i in range(10):
                 mysql = self.connect_mysql()
-                x = (i * n) + j
+                x = 1 + (i * n) + j
                 p = multiprocessing.Process(target=self.process_abstracts, args=(mysql, x, n))
                 jobs.append(p)
                 p.start()
