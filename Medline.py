@@ -51,14 +51,12 @@ class Medline(object):
 
     def queue_process(self, count):
         # Load in the progress of method, call method with correct inputs
-        jobs = []
-        n = 10000
-        for j in range(1, count / 100000 + 1):
-            for i in range(10):
+        n = 1000
+        for j in range(1, count / n + 1):
+            for i in range(1, 10):
                 mysql = self.connect_mysql()
-                x = j * i * 10000
+                x = j * i * n
                 p = multiprocessing.Process(target=self.process_abstracts, args=(mysql, x, n))
-                jobs.append(p)
                 p.start()
         if count % 100000 > 0:
             mysql = self.connect_mysql()
