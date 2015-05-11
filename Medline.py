@@ -6,6 +6,8 @@ from pymongo import MongoClient
 import os.path
 import multiprocessing
 from contextlib import closing
+from scipy import sparse
+
 
 class Medline(object):
     def __init__(self):
@@ -108,16 +110,22 @@ class Medline(object):
             self.fe.train(abstract_dict.values())
 
     # Go through bioBlast table and collect all tfs vectors
-    def create_tfs_matrix(self):
+    def create_tfs_map(self):
         cursor = self.mongo_coll.find()
-        pmid_list = []
         tfs_map = {}
         for record in cursor:
             tfs_vector = pickle.loads(record["tfs_vector"])
             tfs_map[record["pmid"]] = tfs_vector
-            pmid_list.append(record["pmid"])
-        return pmid_list, tfs_map
+        return tfs_map
 
+    # Create a matrix from tfs_values and compute the cosine similarity
+    def tfs_matrix_similarity(self, tfs_map):
+        # print matrix
+        matrix = sparse.coo_matrix([tfs_map.values()], shape=[len(tfs_map), len(tfs_map)])
+        print type(matrix)
+        print matrix.shape()
+        cosine = self.fe.compute_cosine(matrix.tocsr())
+        return cosine
 
     def exhaustive_tfs_search(self):
         # Method stub that will search remaining pmids in mysql database that have abstracts but are not in mongodb
