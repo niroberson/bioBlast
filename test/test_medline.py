@@ -16,7 +16,6 @@ class TestMedline(TestCase):
         self.m.process_abstracts(self.m.mysql, start=0, limit=10000)
         count = self.m.mongo_coll.count()
         self.assertEqual(1329, count)
-        self.m.mysql.close()
 
     def test_get_tfs_vectors(self):
         self.m.connect_mongo(True)

@@ -5,6 +5,7 @@ from FeatureExtractor import FeatureExtractor
 from pymongo import MongoClient
 from scipy.sparse import hstack
 import multiprocessing
+from contextlib import closing
 
 class Medline(object):
     def __init__(self):
@@ -51,21 +52,27 @@ class Medline(object):
 
     def queue_process(self, count):
         # Load in the progress of method, call method with correct inputs
-        n = 1000
-        for j in range(1, count / n + 1):
-            for i in range(1, 10):
+        n = 10000
+        jobs = []
+        for j in range(1, count, n*10):
+            for i in range(10):
                 mysql = self.connect_mysql()
-                x = j * i * n
+                x = (i * n) + j
                 p = multiprocessing.Process(target=self.process_abstracts, args=(mysql, x, n))
+                jobs.append(p)
                 p.start()
-        if count % 100000 > 0:
+
+            for j in jobs:
+                j.join()
+                
+        if count % n * 10 > 0:
             mysql = self.connect_mysql()
-            self.process_abstracts(mysql, count - (count % 100000), count % 100000)
+            self.process_abstracts(mysql, count - (count % n * 10), count % n * 10)
 
     # Create a tfs vector for each abstract, enter into table
     def process_abstracts(self, mysql, start=0, limit=0):
         print "Starting: " + str(start) + " to " + str(start + limit)
-        with mysql:
+        with closing( mysql.cursor() ) as cursor:
             cur = self.mysql.cursor()
             mysql_qry = "SELECT PMID, AbstractText FROM MEDLINE_0"
             if start > 0 or limit > 0:
@@ -73,12 +80,14 @@ class Medline(object):
             else:
                 mysql_qry += ";"
             cur.execute(mysql_qry)
+            count = 0
             for i in range(cur.rowcount):
                 row = cur.fetchone()
                 if row[1] is not None:
                     self.insert_tfs_mongo(row[0], row[1])
-            cur.close()
-        print "Exiting: " + str(start) + " to " + str(start + limit)
+                    count += 1
+        mysql.close()
+        print "Exiting: " + str(start) + " to " + str(start + limit) + " with " + str(count) + " abstracts processed."
 
     # Train the vocabulary with n entries
     # Needs to be verified that n entries have abstracts
