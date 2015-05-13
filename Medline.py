@@ -6,8 +6,8 @@ from pymongo import MongoClient
 import os.path
 import multiprocessing
 from contextlib import closing
-from scipy import sparse
-
+from scipy.sparse import coo_matrix, vstack
+import numpy as np
 
 class Medline(object):
     def __init__(self):
@@ -102,7 +102,7 @@ class Medline(object):
         with self.mysql:
             cur = self.mysql.cursor()
             cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT " + str(n_articles) + ";")
-            for i in range(cur.rowcount):
+            for i in range(cur.rowcountnhub):
                 row = cur.fetchone()
                 if row[1]:
                     abstract_dict[row[0]] = row[1]
@@ -113,18 +113,17 @@ class Medline(object):
     def create_tfs_map(self):
         cursor = self.mongo_coll.find()
         tfs_map = {}
+        pmid_array = ["test"]
+        tfs_matrix = []
         for record in cursor:
+            pmid_array.append(record["pmid"])
             tfs_vector = pickle.loads(record["tfs_vector"])
-            tfs_map[record["pmid"]] = tfs_vector
-        return tfs_map
+            tfs_matrix = vstack([tfs_matrix, tfs_vector])
+        return tfs_matrix, pmid_array
 
     # Create a matrix from tfs_values and compute the cosine similarity
-    def tfs_matrix_similarity(self, tfs_map):
-        # print matrix
-        matrix = sparse.coo_matrix([tfs_map.values()], shape=[len(tfs_map), len(tfs_map)])
-        print type(matrix)
-        print matrix.shape()
-        cosine = self.fe.compute_cosine(matrix.tocsr())
+    def tfs_matrix_similarity(self, tfs_matrix):
+        cosine = self.fe.compute_cosine(tfs_matrix)
         return cosine
 
     def exhaustive_tfs_search(self):

@@ -14,16 +14,18 @@ class TestMedline(TestCase):
         self.m.train_vocabulary(10000)
         self.m.process_abstracts(self.m.mysql, start=0, limit=10000)
         count = self.m.mongo_coll.count()
-        self.assertEqual(1329, count)
+        self.assertEqual(5644, count)
 
     def test_get_tfs_vectors(self):
         self.m.connect_mongo(True)
         tfs_map = self.m.create_tfs_map()
-        self.assertEqual(1329, len(tfs_map))
+        self.assertEqual(2, len(tfs_map))
 
     def time_tests(self):
         t2 = timeit.timeit(self.test_get_tfs, number=1)
         print("{:30s} {:f}".format("time get_tfs", t2))
+        t = timeit.timeit(self.test_similarity_from_load, number=1)
+        print("{:30s} {:f}".format("time get_tfs", t))
 
     def test_multiprocess_abstracts(self):
         self.m.connect_mongo(True)
@@ -39,8 +41,10 @@ class TestMedline(TestCase):
         print res[0]
         self.assertEquals(23343329, res[0])
 
-    def test_similarity_from_map(self):
-        self.m.connect_mongo()
-        tfs_map = self.m.create_tfs_map()
-        similarity = self.m.tfs_matrix_similarity(tfs_map)
-        print similarity
+    def test_similarity_from_load(self):
+        self.m.connect_mongo(True)
+        tfs_matrix, pmid_array = self.m.create_tfs_map()
+        similarity = self.m.tfs_matrix_similarity(tfs_matrix)
+        self.assertEquals(5645, len(pmid_array))
+        self.assertEquals(5645, similarity.shape[0])
+        self.assertAlmostEquals(1, similarity[1, 1])
