@@ -25,7 +25,6 @@ class TestFeatureExtractor(TestCase):
 
     def test_compute_cosine(self):
         tfs = self.feature_extractor.train(data)
-        print type(tfs)
         cosine_matrix = self.feature_extractor.compute_cosine(tfs)
         self.assertEqual(6, len(cosine_matrix))
         self.assertAlmostEqual(1, cosine_matrix[0,0])

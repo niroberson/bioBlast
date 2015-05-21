@@ -52,11 +52,11 @@ class Medline(object):
             post["tfs_vector"] = tfs_vector
             self.mongo_coll.save(post)
 
-    def queue_process(self, count):
+    def queue_process(self, start, count):
         # Load in the progress of method, call method with correct inputs
         n = 10000
         jobs = []
-        for j in range(0, count, n*10):
+        for j in range(start, count, n*10):
             for i in range(10):
                 mysql = self.connect_mysql()
                 x = 1 + (i * n) + j
