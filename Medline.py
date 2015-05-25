@@ -63,9 +63,6 @@ class Medline(object):
                 p = multiprocessing.Process(target=self.process_abstracts, args=(mysql, x, n))
                 jobs.append(p)
                 p.start()
-
-            for j in jobs:
-                j.join()
                 
         if count % n * 10 > 0:
             mysql = self.connect_mysql()

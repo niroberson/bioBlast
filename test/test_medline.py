@@ -31,7 +31,7 @@ class TestMedline(TestCase):
         self.m.connect_mongo(True)
         self.m.connect_mysql(True)
         self.m.train_vocabulary(10000)
-        self.m.queue_process(120000)
+        self.m.queue_process(0, 120000)
 
     def test_count_rows(self):
         self.m.connect_mysql(True)
