@@ -14,6 +14,6 @@ m = Medline()
 # m.connect_mongo()
 # m.queue_process(5300000, 24000000)
 
-
+m.connect_mongo()
 tfs_matrix, pmid_array = m.create_tfs_map()
 m.tfs_matrix_similarity(tfs_matrix)
