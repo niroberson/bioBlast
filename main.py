@@ -10,10 +10,10 @@ m = Medline()
 # m.train_vocabulary(250000)
 #
 # # Connect to mysql, mongo and process all abstracts
-m.connect_mysql()
-m.connect_mongo()
-m.queue_process(6000000, 24000000)
-
+# m.connect_mysql()
 # m.connect_mongo()
-# tfs_matrix, pmid_array = m.create_tfs_map()
-# m.tfs_matrix_similarity(tfs_matrix)
+# m.queue_process(6000000, 24000000)
+
+m.connect_mongo()
+tfs_matrix, pmid_array = m.create_tfs_map()
+similarity = m.tfs_matrix_similarity(tfs_matrix)

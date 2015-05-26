@@ -48,3 +48,12 @@ class TestMedline(TestCase):
         self.assertEquals(5645, len(pmid_array))
         self.assertEquals(5645, similarity.shape[0])
         self.assertAlmostEquals(1, similarity[1, 1])
+
+    def test_save_similar(self):
+        self.m.connect_mongo(True)
+        self.m.connect_mysql(True)
+        self.m.train_vocabulary(10000)
+        self.m.queue_process(0, 120000)
+        tfs_matrix, pmid_array = self.m.create_tfs_map()
+        similarity = self.m.tfs_matrix_similarity(tfs_matrix)
+        self.m.output_similarity(similarity, pmid_array)

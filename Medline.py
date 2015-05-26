@@ -8,6 +8,7 @@ import multiprocessing
 from contextlib import closing
 from scipy.sparse import coo_matrix, vstack
 import numpy as np
+import csv
 
 class Medline(object):
     def __init__(self):
@@ -102,12 +103,12 @@ class Medline(object):
         with self.mysql:
             cur = self.mysql.cursor()
             cur.execute("SELECT PMID, AbstractText FROM MEDLINE_0 LIMIT " + str(n_articles) + ";")
-            for i in range(cur.rowcountnhub):
+            for i in range(cur.rowcount):
                 row = cur.fetchone()
                 if row[1]:
                     abstract_dict[row[0]] = row[1]
             cur.close()
-            self.fe.train(abstract_dict.values())
+            self.fe.train(abstract_dict.values(), True)
 
     # Go through bioBlast table and collect all tfs vectors
     def create_tfs_map(self):
@@ -118,13 +119,26 @@ class Medline(object):
         for record in cursor:
             pmid_array.append(record["pmid"])
             tfs_vector = pickle.loads(record["tfs_vector"])
-            tfs_matrix = vstack([tfs_matrix, tfs_vector])
+            tfs_matrix = vstack((tfs_matrix, tfs_vector))
         return tfs_matrix, pmid_array
 
     # Create a matrix from tfs_values and compute the cosine similarity
     def tfs_matrix_similarity(self, tfs_matrix):
         cosine = self.fe.compute_cosine(tfs_matrix)
         return cosine
+
+    def output_similarity(self, similarity, pmid):
+        similarity = np.triu(similarity, k=1)
+        index = np.where(similarity > 0.75)
+        x = index[0].flat
+        y = index[1].flat
+        with open('similarity_results.csv', 'wb') as f:
+            fieldnames = ['pmid1', 'pmid2', 'score']
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            for i in range(0, len(x)):
+                writer.writerow({'pmid1': pmid[x[i]], 'pmid2': pmid[y[i]], 'score':similarity[x[i], y[i]]})
+
 
     def exhaustive_tfs_search(self):
         # Method stub that will search remaining pmids in mysql database that have abstracts but are not in mongodb
