@@ -55,7 +55,7 @@ class Medline(object):
 
     def queue_process(self, start, count):
         # Load in the progress of method, call method with correct inputs
-        n = 1000
+        n = 2000
         jobs = []
         for j in range(start, count, n*10):
             for i in range(10):
