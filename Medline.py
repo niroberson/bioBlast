@@ -65,8 +65,8 @@ class Medline(object):
                 jobs.append(p)
                 p.start()
 
-            for j in jobs:
-                j.join()
+            for k in jobs:
+                k.join()
                 
         if count % n * 10 > 0:
             mysql = self.connect_mysql()
