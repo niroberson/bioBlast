@@ -55,9 +55,9 @@ class Medline(object):
 
     def queue_process(self, start, count):
         # Load in the progress of method, call method with correct inputs
-        n = 2000
-        jobs = []
+        n = 10000
         for j in range(start, count, n*10):
+            jobs = []
             for i in range(10):
                 mysql = self.connect_mysql()
                 x = 1 + (i * n) + j
