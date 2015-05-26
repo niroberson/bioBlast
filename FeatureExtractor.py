@@ -26,7 +26,7 @@ class FeatureExtractor(object):
     # This is the vectorizer with are working with that currently uses unigrams and bigrams
     def initialize_vector(self):
         tfidf = TfidfVectorizer(
-            ngram_range=(1, 2),
+            ngram_range=(6, 6),
             stop_words='english',
             lowercase=True,
             strip_accents='ascii',

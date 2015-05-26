@@ -27,12 +27,7 @@ class TestFeatureExtractor(TestCase):
         tfs = self.feature_extractor.train(data)
         cosine_matrix = self.feature_extractor.compute_cosine(tfs)
         self.assertEqual(6, len(cosine_matrix))
-        self.assertAlmostEqual(1, cosine_matrix[0,0])
-
-    def test_get_n_top_matches(self):
-        results = self.feature_extractor.find_matches(data)
-        self.assertEqual(results[0][0], results[0][1])
-        self.assertEqual(len(data) ** 2, len(results))
+        self.assertAlmostEqual(1, cosine_matrix[0, 0])
 
     def test_compute_single_cosine(self):
         # Test the response is the identity vector
