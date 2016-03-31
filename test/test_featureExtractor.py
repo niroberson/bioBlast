@@ -13,6 +13,7 @@ data = ["All of my brother's sons are in college",
 data2 = ("All of my brother's daughters are in preschool",)
 data3 = ("When will it be time for lunch?",)
 
+
 class TestFeatureExtractor(TestCase):
     def setUp(self):
         self.feature_extractor = FeatureExtractor()
